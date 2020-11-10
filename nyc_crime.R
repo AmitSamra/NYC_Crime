@@ -151,5 +151,25 @@ df_year_arrests %>%
     scale_y_continuous(breaks = seq(0,max(df_year_arrests$total_arrests),5000), labels=comma) +
     scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1))
 
-ggsave("arrests_year.png", device = "png", path = "img")
+# This is an alternative way of setting the y-axis labels:
+df_year_arrests %>% 
+  ggplot( aes(x = ARREST_YEAR, y = total_arrests) ) + 
+  geom_line(color = "steel blue") +
+  ggtitle("Total Arrests by Year") +
+  xlab("Year") +
+  ylab("Number of Arrests") +
+  scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
+  scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1))
 
+# We can also add labels to the graph
+df_year_arrests %>% 
+  ggplot( aes(x = ARREST_YEAR, y = total_arrests, label=total_arrests) ) + 
+  geom_line(color = "steel blue") +
+  ggtitle("Total Arrests by Year") +
+  xlab("Year") +
+  ylab("Number of Arrests") +
+  scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
+  scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1)) +
+  geom_text(hjust=0, vjust=-1, size=3)
+
+ggsave("arrests_year.png", device = "png", path = "img")
