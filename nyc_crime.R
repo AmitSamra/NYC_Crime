@@ -182,11 +182,11 @@ df_year_arrests_pc = mutate(df_year_arrests, change=(total_arrests-lag(total_arr
 df_year_arrests_pc %>% 
   ggplot( aes(x = ARREST_YEAR, y = total_arrests, label=scales::percent(change)) ) + 
   geom_line(color = "steel blue") +
-  ggtitle("Total Arrests by Year") +
+  ggtitle("Change in Arrests") +
   xlab("Year") +
   ylab("Number of Arrests") +
   scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
   scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1)) +
   geom_text(hjust=0, vjust=-1, size=3)
 
-
+ggsave("arrests_year_percent.png", device = "png", path = "img")
