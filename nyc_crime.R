@@ -142,7 +142,8 @@ df_year_arrests = df %>%
   summarize(total_arrests = n())
 
 # Next we plot as we did above
-df_year_arrests %>% ggplot( aes(x = ARREST_YEAR, y = total_arrests) ) + 
+df_year_arrests %>% 
+  ggplot( aes(x = ARREST_YEAR, y = total_arrests) ) + 
     geom_line(color = "steel blue") +
     ggtitle("Total Arrests by Year") +
     xlab("Year") +
