@@ -53,8 +53,8 @@ class(df)
 df$ARREST_DATE = as.Date(df$ARREST_DATE, format = '%m/%d/%Y')
 
 
-# Order df by ARREST_KEY ascending
-df = df[order(df$ARREST_KEY),]
+# Order df by ARREST_KEY descending
+df = df[rev( order(df$ARREST_KEY) ),]
 
 
 # Order df by ARREST_DATE descending
@@ -109,13 +109,12 @@ View(df_2006_drugs_dplyr)
 
 
 # --------------------------------------------------
-# Visualization
 
 # Plot total arrests by year using base R
 table(df$ARREST_YEAR) %>% plot(type='l')
 
 
-# Let's build the plot syntax for dplyr in pieces
+# Let's build the plot syntax for the dplyr method in pieces
 # group_by() groups each record by year
 df %>%
   group_by(ARREST_YEAR)
@@ -137,56 +136,91 @@ ggsave("arrests_year.png", device = "png", path = "img")
 # Let's format the graph
 # First we create a separate dataframe that we wish to plot
 
-df_year_arrests = df %>%
+df_arrests_year = df %>%
   group_by(ARREST_YEAR) %>%
   summarize(total_arrests = n())
 
 # Next we plot as we did above
-df_year_arrests %>% 
+df_arrests_year %>% 
   ggplot( aes(x = ARREST_YEAR, y = total_arrests) ) + 
     geom_line(color = "steel blue") +
     ggtitle("Total Arrests by Year") +
     xlab("Year") +
     ylab("Number of Arrests") +
-    scale_y_continuous(breaks = seq(0,max(df_year_arrests$total_arrests),5000), labels=comma) +
-    scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1))
+    scale_y_continuous(breaks = seq(0,max(df_arrests_year$total_arrests),5000), labels=comma) +
+    scale_x_continuous(breaks = seq(min(df_arrests_year$ARREST_YEAR),max(df_arrests_year$ARREST_YEAR),1))
 
 # This is an alternative way of setting the y-axis labels:
-df_year_arrests %>% 
+df_arrests_year %>% 
   ggplot( aes(x = ARREST_YEAR, y = total_arrests) ) + 
   geom_line(color = "steel blue") +
   ggtitle("Total Arrests by Year") +
   xlab("Year") +
   ylab("Number of Arrests") +
   scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
-  scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1))
+  scale_x_continuous(breaks = seq(min(df_arrests_year$ARREST_YEAR),max(df_arrests_year$ARREST_YEAR),1))
 
 # We can also add labels to the graph
-df_year_arrests %>% 
+df_arrests_year %>% 
   ggplot( aes(x = ARREST_YEAR, y = total_arrests, label=total_arrests) ) + 
   geom_line(color = "steel blue") +
   ggtitle("Total Arrests by Year") +
   xlab("Year") +
   ylab("Number of Arrests") +
   scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
-  #scale_y_continuous(breaks = df_year_arrests$total_arrests) +
-  scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1)) +
+  #scale_y_continuous(breaks = df_arrests_year$total_arrests) +
+  scale_x_continuous(breaks = seq(min(df_arrests_year$ARREST_YEAR),max(df_arrests_year$ARREST_YEAR),1)) +
   geom_text(hjust=0, vjust=-1, size=3)
 
 ggsave("arrests_year.png", device = "png", path = "img")
 
 
 # Add percentage change
-df_year_arrests_pc = mutate(df_year_arrests, change=(total_arrests-lag(total_arrests))/lag(total_arrests))
+df_arrests_year_pc = mutate(df_arrests_year, change=(1- total_arrests/lag(total_arrests)))
 
-df_year_arrests_pc %>% 
+df_arrests_year_pc %>% 
   ggplot( aes(x = ARREST_YEAR, y = total_arrests, label=scales::percent(change)) ) + 
-  geom_line(color = "steel blue") +
+  geom_line(color = "red") +
   ggtitle("Change in Arrests") +
   xlab("Year") +
   ylab("Number of Arrests") +
   scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
-  scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1)) +
+  scale_x_continuous(breaks = seq( min(df_arrests_year_pc$ARREST_YEAR), max(df_arrests_year_pc$ARREST_YEAR),1)) +
   geom_text(hjust=0, vjust=-1, size=3)
 
 ggsave("arrests_year_percent.png", device = "png", path = "img")
+
+
+# --------------------------------------------------
+
+# Plot drug arrests for all years
+df_arrests_drugs = df %>%
+  filter(KY_CD == 235) %>%
+  group_by(ARREST_YEAR) %>%
+  summarize(total_arrests = n())
+  
+df_arrests_drugs %>%
+  ggplot( aes(x=ARREST_YEAR, y=total_arrests, label=total_arrests) ) +
+  geom_line(color = 'steel blue') +
+  ggtitle("Drug Arrests by Year") +
+  xlab("Year") +
+  ylab("Number of Arrests") +
+  scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
+  scale_x_continuous(breaks = seq( min(df_arrests_drugs$ARREST_YEAR), max(df_arrests_drugs$ARREST_YEAR), 1)) +
+  geom_text(hjust=0, vjust=-1, size=3)
+
+
+# Plot drug arrests percent change
+df_arrests_drugs_pc = mutate(df_arrests_drugs, change=(1- total_arrests/lag(total_arrests)))
+
+df_arrests_drugs_pc %>% 
+  ggplot( aes(x=ARREST_YEAR, y=total_arrests, label=total_arrests)) +
+  geom_line(color = 'red') +
+  ggtitle("Change in Drug Arrests") +
+  xlab("Year") +
+  ylab("Number of Arrests") +
+  scale_y_continuous(breaks = scales::breaks_extended(n=10), labels = comma) +
+  scale_x_continuous(breaks = seq( min(df_arrests_drugs_pc$ARREST_YEAR), max(df_arrests_drugs_pc$total_arrests), 1)) +
+  geom_text(hjust=0, vjust=-1, size=3)
+
+ggsave("arrests_drugs_pc.png", device = "png", path = "img")
