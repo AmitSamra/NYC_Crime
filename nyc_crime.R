@@ -188,7 +188,7 @@ df_arrests_year_pc %>%
   scale_x_continuous(breaks = seq( min(df_arrests_year_pc$ARREST_YEAR), max(df_arrests_year_pc$ARREST_YEAR),1)) +
   geom_text(hjust=0, vjust=-1, size=3)
 
-ggsave("arrests_year_percent.png", device = "png", path = "img")
+ggsave("arrests_year_pc.png", device = "png", path = "img")
 
 
 # --------------------------------------------------
@@ -209,12 +209,14 @@ df_arrests_drugs %>%
   scale_x_continuous(breaks = seq( min(df_arrests_drugs$ARREST_YEAR), max(df_arrests_drugs$ARREST_YEAR), 1)) +
   geom_text(hjust=0, vjust=-1, size=3)
 
+ggsave("arrests_drugs.png", device = "png", path = "img")
+
 
 # Plot drug arrests percent change
 df_arrests_drugs_pc = mutate(df_arrests_drugs, change=(1- total_arrests/lag(total_arrests)))
 
 df_arrests_drugs_pc %>% 
-  ggplot( aes(x=ARREST_YEAR, y=total_arrests, label=total_arrests)) +
+  ggplot( aes(x=ARREST_YEAR, y=total_arrests, label=scales::percent(change))) +
   geom_line(color = 'red') +
   ggtitle("Change in Drug Arrests") +
   xlab("Year") +
@@ -224,3 +226,8 @@ df_arrests_drugs_pc %>%
   geom_text(hjust=0, vjust=-1, size=3)
 
 ggsave("arrests_drugs_pc.png", device = "png", path = "img")
+
+
+# --------------------------------------------------
+
+
