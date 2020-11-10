@@ -32,6 +32,7 @@ nrow(df)
 
 
 # Count all rows
+# count() is a dplyr function
 count(df)
 
 
@@ -80,16 +81,56 @@ df[1,1]
 
 
 # Count rows by creating groups
+# count() is a dplyr function
 count(df, ARREST_YEAR)
 
 
 # Count rows based on condition
-count(df, ARREST_YEAR == '2006')
+length( which(df$ARREST_YEAR == 2006) )
 
 
-# 
+# Filter using base R command to create a subset
+df_2006_base = df[df$ARREST_YEAR == 2006, ]
 
+
+# Using dplyr, we can simplify the syntax to create a subset
+df_2006_dplyr = filter(df, (ARREST_YEAR == 2006))
+
+
+# Filter all rows using multiple conditions using base
+df_2006_drugs_base = df[df$ARREST_YEAR == 2006 & df$KY_CD == 235,]
+View(df_2006_drugs_base)
+
+
+# Filter all rows using multiple conditions using dplyr
+df_2006_drugs_dplyr = filter(df, (ARREST_YEAR == 2006 & KY_CD == 235))
+View(df_2006_drugs_dplyr)
 
 
 # --------------------------------------------------
 # Visualization
+
+# Plot total arrests by year using base R
+table(df$ARREST_YEAR) %>% plot(type='l')
+
+
+# Let's build the plot syntax for dplyr in pieces
+# group_by() groups each record by year
+df %>%
+  group_by(ARREST_YEAR)
+
+# Adding summarize() sums all of the records for each year
+df %>%
+  group_by(ARREST_YEAR) %>%
+  summarize(total_arrest = n())
+  
+# Lastly ggplot() is used to plot
+df %>%
+  group_by(ARREST_YEAR) %>%
+  summarize(total_arrests = n()) %>%
+  ggplot( aes ( x = ARREST_YEAR, y = total_arrests, group = 1) ) + geom_line()
+
+# Save plot
+ggsave("arrests_year.png", device = "png", path = "img")
+
+
