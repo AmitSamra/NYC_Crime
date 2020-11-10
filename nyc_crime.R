@@ -11,6 +11,7 @@ library(plyr)
 library(dplyr)
 library(ggplot2)
 library(corrplot)
+library(scales)
 
 # --------------------------------------------------
 # Data Processing 
@@ -133,4 +134,18 @@ df %>%
 # Save plot
 ggsave("arrests_year.png", device = "png", path = "img")
 
+# Let's format the graph
+df %>%
+  group_by(ARREST_YEAR) %>%
+  summarize(total_arrests = n()) %>%
+  ggplot( aes(x = ARREST_YEAR, y = total_arrests) ) + 
+    geom_line(color = "steel blue") +
+    ggtitle("Total Arrests by Year") +
+    xlab("Year") +
+    ylab("Number of Arrests") +
+    scale_y_continuous(breaks = seq(0,500000,5000), labels=comma) +
+    scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1))
 
+ggsave("arrests_year.png", device = "png", path = "img")
+
+rm(df2)
