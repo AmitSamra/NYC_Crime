@@ -123,7 +123,7 @@ df %>%
 # Adding summarize() sums all of the records for each year
 df %>%
   group_by(ARREST_YEAR) %>%
-  summarize(total_arrest = n())
+  summarize(total_arrests = n())
   
 # Lastly ggplot() is used to plot
 df %>%
@@ -135,17 +135,20 @@ df %>%
 ggsave("arrests_year.png", device = "png", path = "img")
 
 # Let's format the graph
-df %>%
+# First we create a separate dataframe that we wish to plot
+
+df_year_arrests = df %>%
   group_by(ARREST_YEAR) %>%
-  summarize(total_arrests = n()) %>%
-  ggplot( aes(x = ARREST_YEAR, y = total_arrests) ) + 
+  summarize(total_arrests = n())
+
+# Next we plot as we did above
+df_year_arrests %>% ggplot( aes(x = ARREST_YEAR, y = total_arrests) ) + 
     geom_line(color = "steel blue") +
     ggtitle("Total Arrests by Year") +
     xlab("Year") +
     ylab("Number of Arrests") +
-    scale_y_continuous(breaks = seq(0,500000,5000), labels=comma) +
+    scale_y_continuous(breaks = seq(0,max(df_year_arrests$total_arrests),5000), labels=comma) +
     scale_x_continuous(breaks = seq(min(df$ARREST_YEAR),max(df$ARREST_YEAR),1))
 
 ggsave("arrests_year.png", device = "png", path = "img")
 
-rm(df2)
