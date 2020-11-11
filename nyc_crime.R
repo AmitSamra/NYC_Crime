@@ -326,8 +326,18 @@ df_top_10 = df %>%
 # sort desc
 df_top_10 = top_n(df_top_10, 10, total_arrests) %>%
   arrange(desc(total_arrests))
-df_top_10
+df_top_10 %>%
+  ggplot(aes(x=OFNS_DESC, y=total_arrests, label=total_arrests)) +
+  geom_bar(stat='identity', fill='steel blue') +
+  ggtitle('Arrests by Offense Description') +
+  xlab('Offense Description') +
+  ylab('Number of Arrests') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  theme(axis.text.x=element_text(angle=90,hjust=1))
 
+ggsave("top_10_ofns.png", device = "png", path = "img")
+  
 
 # Top crimes by CATEGORY
 df_top_cat = df %>%
@@ -335,5 +345,15 @@ df_top_cat = df %>%
   summarize(total_arrests = n())
 df_top_cat = top_n(df_top_cat,length(unique(df$CATEGORY)),total_arrests) %>%
   arrange(desc(total_arrests))
-df_top_cat
+df_top_cat %>%
+  ggplot(aes(x=CATEGORY, y=total_arrests, label=total_arrests)) +
+  geom_bar(stat='identity', fill='steel blue') +
+  ggtitle('Arrests by Category') +
+  xlab('Category') +
+  ylab('Number of Arrests') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  theme(axis.text.x=element_text(angle=90,hjust=1))
+
+ggsave("top_10_cat.png", device = "png", path = "img")
 
