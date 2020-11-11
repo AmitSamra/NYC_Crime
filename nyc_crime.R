@@ -71,9 +71,9 @@ df$ARREST_DAY = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%d")
 
 
 # Change data types for Year, Month, Day
-#df$ARREST_YEAR = as.integer(df$ARREST_YEAR)
-#df$ARREST_MONTH = as.integer(df$ARREST_MONTH)
-#df$ARREST_DAY = as.integer(df$ARREST_DAY)
+df$ARREST_YEAR = as.integer(df$ARREST_YEAR)
+df$ARREST_MONTH = as.integer(df$ARREST_MONTH)
+df$ARREST_DAY = as.integer(df$ARREST_DAY)
 
 # Check if data type changed
 class(df$ARREST_YEAR)
@@ -102,13 +102,78 @@ df_2006_dplyr = filter(df, (ARREST_YEAR == 2006))
 
 
 # Filter all rows using multiple conditions using base
-df_2006_drugs_base = df[df$ARREST_YEAR == 2006 & df$KY_CD == 235,]
-View(df_2006_drugs_base)
+df_2006_jan_base = df[df$ARREST_YEAR == 2006 & df$ARREST_MONTH == 1,]
+View(df_2006_jan_base)
 
 
 # Filter all rows using multiple conditions using dplyr
-df_2006_drugs_dplyr = filter(df, (ARREST_YEAR == 2006 & KY_CD == 235))
-View(df_2006_drugs_dplyr)
+df_2006_jan_dplyr = filter(df, (ARREST_YEAR == 2006 & ARREST_MONTH == 1))
+View(df_2006_jan_dplyr)
+
+
+# --------------------------------------------------
+
+# Reducing crime categories for simpler reporting
+
+# Count all OFNS_DESC
+length(unique(df$OFNS_DESC))
+# There are 85 different values for OFNS_DESC
+
+
+# Show call OFNS_DESC
+unique(df$OFNS_DESC)
+
+
+# THEFT_FRAUD
+THEFT = c("BURGLARY","PETIT LARCENY","OFFENSES INVOLVING FRAUD","THEFT OF SERVICES","POSSESSION OF STOLEN PROPERTY 5","THEFT-FRAUD",
+          "OTHER OFFENSES RELATED TO THEF","FRAUDULENT ACCOSTING","ROBBERY","GRAND LARCENY OF MOTOR VEHICLE",
+          "POSSESSION OF STOLEN PROPERTY","GRAND LARCENY","FORGERY","BURGLAR'S TOOLS","FRAUDS","OTHER OFFENSES RELATED TO THEFT",
+          "JOSTLING","CRIMINAL TRESPASS")
+df$CATEGORY[df$OFNS_DESC %in% THEFT] = "THEFT & FRAUD"
+
+# DRUGS
+DRUGS = c("DANGEROUS DRUGS","LOITERING FOR DRUG PURPOSES","UNDER THE INFLUENCE, DRUGS")
+df$CATEGORY[df$OFNS_DESC %in% DRUGS] = "DRUGS"
+
+# WEAPONS
+WEAPONS = c("DANGEROUS WEAPONS","UNLAWFUL POSS. WEAP. ON SCHOOL","UNLAWFUL POSS. WEAP. ON SCHOOL GROUNDS")
+df$CATEGORY[df$OFNS_DESC %in% WEAPONS] = "WEAPONS"
+
+# ASSAULT
+ASSAULT = c("FELONY ASSAULT","ASSAULT 3 & RELATED OFFENSES")
+df$CATEGORY[df$OFNS_DESC %in% ASSAULT] = "ASSAULT"
+
+# SEXUAL_ASSAULT
+SEXUAL_ASSAULT = c("RAPE","SEX CRIMES","FORCIBLE TOUCHING")
+df$CATEGORY[df$OFNS_DESC %in% SEXUAL_ASSAULT] = "SEXUAL ASSAULT"
+
+# TRAFFIC
+TRAFFIC = c("INTOXICATED & IMPAIRED DRIVING","VEHICLE AND TRAFFIC LAWS","MOVING INFRACTIONS","PARKING OFFENSES",
+            "INTOXICATED/IMPAIRED DRIVING","OTHER TRAFFIC INFRACTION", "UNAUTHORIZED USE OF A VEHICLE 3 (UUV)",
+            "UNAUTHORIZED USE OF A VEHICLE")
+df$CATEGORY[df$OFNS_DESC %in% TRAFFIC] = "TRAFFIC"
+
+# MURDER
+MURDER = c("MURDER & NON-NEGL. MANSLAUGHTE", "MURDER & NON-NEGL. MANSLAUGHTER", "HOMICIDE-NEGLIGENT,UNCLASSIFIED", 
+           "HOMICIDE-NEGLIGENT-VEHICLE","HOMICIDE-NEGLIGENT,UNCLASSIFIE")
+df$CATEGORY[df$OFNS_DESC %in% MURDER] = "MURDER"
+
+# CHILDREN
+CHILDREN = c("KIDNAPPING", "CHILD ABANDONMENT/NON SUPPORT 1", "KIDNAPPING & RELATED OFFENSES", "OFFENSES RELATED TO CHILDREN",
+             "CHILD ABANDONMENT/NON SUPPORT")
+df$CATEGORY[df$OFNS_DESC %in% CHILDREN] = "CHILDREN"
+
+# OTHER
+ALL_CAT = c(THEFT, DRUGS, WEAPONS, ASSAULT, SEXUAL_ASSAULT, MURDER, CHILDREN, TRAFFIC)
+df$CATEGORY[!df$OFNS_DESC %in% ALL_CAT] = "OTHER"
+
+unique(df$CATEGORY)
+# "OTHER" "ASSAULT" "THEFT & FRAUD" "TRAFFIC" "WEAPONS" "DRUGS" "SEXUAL ASSAULT" "MURDER" "CHILDREN"      
+
+
+# --------------------------------------------------
+# Drop unnecessary columns
+df = within(df, rm(PD_CD, KY_CD, LAW_CODE, JURISDICTION_CODE))
 
 
 # --------------------------------------------------
@@ -200,7 +265,7 @@ ggsave("arrests_year_pc.png", device = "png", path = "img")
 
 # Plot drug arrests for all years
 df_arrests_drugs = df %>%
-  filter(KY_CD == 235) %>%
+  filter(CATEGORY == 'DRUGS') %>%
   group_by(ARREST_YEAR) %>%
   summarize(total_arrests = n())
   
@@ -247,63 +312,28 @@ df_arrests_month %>%
   geom_line() +
   xlab('Month') +
   ylab('Number of Arrests') +
-  scale_x_datetime(labels = "%B", date_breaks = "1 month")
+  scale_x_date(date_labels = "%B", date_breaks = "1 month")
                  
 # ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
 
 
 # --------------------------------------------------
 
-# Reducing crime categories for simpler reporting
+# Top 10 crimes by OFNS_DESC
+df_top_10 = df %>%
+  group_by(OFNS_DESC) %>%
+  summarize(total_arrests = n())
+# sort desc
+df_top_10 = top_n(df_top_10, 10, total_arrests) %>%
+  arrange(desc(total_arrests))
+df_top_10
 
-# Count all KY_CD
-length(unique(df$KY_CD))
-# There are 75 different values for KY_CD
 
-# THEFT_FRAUD
-THEFT = c("BURGLARY","PETIT LARCENY","OFFENSES INVOLVING FRAUD","THEFT OF SERVICES","POSSESSION OF STOLEN PROPERTY 5","THEFT-FRAUD",
-         "OTHER OFFENSES RELATED TO THEF","FRAUDULENT ACCOSTING","ROBBERY","GRAND LARCENY OF MOTOR VEHICLE",
-         "POSSESSION OF STOLEN PROPERTY","GRAND LARCENY","FORGERY","BURGLAR'S TOOLS","FRAUDS","OTHER OFFENSES RELATED TO THEFT",
-         "JOSTLING","CRIMINAL TRESPASS")
-df$CATEGORY[df$OFNS_DESC %in% THEFT] = "THEFT & FRAUD"
-
-# DRUGS
-DRUGS = c("DANGEROUS DRUGS","LOITERING FOR DRUG PURPOSES","UNDER THE INFLUENCE, DRUGS")
-df$CATEGORY[df$OFNS_DESC %in% DRUGS] = "DRUGS"
-
-# WEAPONS
-WEAPONS = c("DANGEROUS WEAPONS","UNLAWFUL POSS. WEAP. ON SCHOOL","UNLAWFUL POSS. WEAP. ON SCHOOL GROUNDS")
-df$CATEGORY[df$OFNS_DESC %in% WEAPONS] = "WEAPONS"
-
-# ASSAULT
-ASSAULT = c("FELONY ASSAULT","ASSAULT 3 & RELATED OFFENSES")
-df$CATEGORY[df$OFNS_DESC %in% ASSAULT] = "ASSAULT"
-
-# SEXUAL_ASSAULT
-SEXUAL_ASSAULT = c("RAPE","SEX CRIMES","FORCIBLE TOUCHING")
-df$CATEGORY[df$OFNS_DESC %in% SEXUAL_ASSAULT] = "SEXUAL ASSAULT"
-
-# TRAFFIC
-TRAFFIC = c("INTOXICATED & IMPAIRED DRIVING","VEHICLE AND TRAFFIC LAWS","MOVING INFRACTIONS","PARKING OFFENSES",
-            "INTOXICATED/IMPAIRED DRIVING","OTHER TRAFFIC INFRACTION", "UNAUTHORIZED USE OF A VEHICLE 3 (UUV)",
-            "UNAUTHORIZED USE OF A VEHICLE")
-df$CATEGORY[df$OFNS_DESC %in% TRAFFIC] = "TRAFFIC"
-
-# MURDER
-MURDER = c("MURDER & NON-NEGL. MANSLAUGHTE", "MURDER & NON-NEGL. MANSLAUGHTER", "HOMICIDE-NEGLIGENT,UNCLASSIFIED", 
-           "HOMICIDE-NEGLIGENT-VEHICLE","HOMICIDE-NEGLIGENT,UNCLASSIFIE")
-df$CATEGORY[df$OFNS_DESC %in% MURDER] = "MURDER"
-
-# CHILDREN
-CHILDREN = c("KIDNAPPING", "CHILD ABANDONMENT/NON SUPPORT 1", "KIDNAPPING & RELATED OFFENSES", "OFFENSES RELATED TO CHILDREN",
-             "CHILD ABANDONMENT/NON SUPPORT")
-df$CATEGORY[df$OFNS_DESC %in% CHILDREN] = "CHILDREN"
-
-# OTHER
-ALL_CAT = c(THEFT, DRUGS, WEAPONS, ASSAULT, SEXUAL_ASSAULT, MURDER, CHILDREN)
-df$CATEGORY[!df$OFNS_DESC %in% ALL_CAT] = "OTHER"
-
-unique(df$CATEGORY)
-
-View(df)
+# Top crimes by CATEGORY
+df_top_cat = df %>%
+  group_by(CATEGORY) %>%
+  summarize(total_arrests = n())
+df_top_cat = top_n(df_top_cat,length(unique(df$CATEGORY)),total_arrests) %>%
+  arrange(desc(total_arrests))
+df_top_cat
 
