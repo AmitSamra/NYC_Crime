@@ -337,7 +337,7 @@ df_top_10 %>%
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
   aes(x = reorder(OFNS_DESC, -total_arrests))
 
-ggsave("top_10_ofns.png", device = "png", path = "img")
+ggsave('top_10_ofns.png', device='png', path='img')
   
 
 # Top crimes by CATEGORY
@@ -355,7 +355,32 @@ df_top_cat %>%
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  aes(x = reorder(CATEGORY, -total_arrests))
+  aes(x=reorder(CATEGORY, -total_arrests))
 
-ggsave("top_10_cat.png", device = "png", path = "img")
+ggsave('top_10_cat.png', device='png', path='img')
+
+
+# --------------------------------------------------
+
+# Crimes by Misdemeanors, Felonies, Violations, Infractions
+
+df_crime_type = df %>%
+  group_by(LAW_CAT_CD) %>%
+  summarize(total_arrests = n())
+df_crime_type %>%
+  ggplot(aes(x=LAW_CAT_CD, y=total_arrests), label=total_arrests) +
+  geom_bar(stat='identity', fill='red') +
+  ggtitle('Arrests by Crime Type') +
+  xlab('Crime Type') +
+  ylab('Number of Arrests') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  aes(x=reorder(LAW_CAT_CD, -total_arrests))
+
+ggsave('crime_type.png', device='png', path='img')
+
+
+# --------------------------------------------------
+
+
 
