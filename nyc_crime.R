@@ -334,7 +334,8 @@ df_top_10 %>%
   ylab('Number of Arrests') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
-  theme(axis.text.x=element_text(angle=90,hjust=1))
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  aes(x = reorder(OFNS_DESC, -total_arrests))
 
 ggsave("top_10_ofns.png", device = "png", path = "img")
   
@@ -353,7 +354,8 @@ df_top_cat %>%
   ylab('Number of Arrests') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
-  theme(axis.text.x=element_text(angle=90,hjust=1))
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  aes(x = reorder(CATEGORY, -total_arrests))
 
 ggsave("top_10_cat.png", device = "png", path = "img")
 
