@@ -4,6 +4,8 @@
 #install.packages("dplyr")
 #install.packages("ggplot2")
 #install.packages("corrplot")
+#install.packages("ggrepel")
+
 
 # Load packages
 library(readr)
@@ -12,6 +14,7 @@ library(dplyr)
 library(ggplot2)
 library(corrplot)
 library(scales)
+library(ggrepel)
 
 # --------------------------------------------------
 # Data Processing 
@@ -170,13 +173,14 @@ df_arrests_year %>%
   scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
   #scale_y_continuous(breaks = df_arrests_year$total_arrests) +
   scale_x_continuous(breaks = seq(min(df_arrests_year$ARREST_YEAR),max(df_arrests_year$ARREST_YEAR),1)) +
-  geom_text(hjust=0, vjust=-1, size=3)
+  geom_text(hjust=0, vjust=-1, size=3) +
+  geom_point(color='steel blue')
 
 ggsave("arrests_year.png", device = "png", path = "img")
 
 
 # Add percentage change
-df_arrests_year_pc = mutate(df_arrests_year, change=(1- total_arrests/lag(total_arrests)))
+df_arrests_year_pc = mutate(df_arrests_year, change=(total_arrests/lag(total_arrests))-1)
 
 df_arrests_year_pc %>% 
   ggplot( aes(x = ARREST_YEAR, y = total_arrests, label=scales::percent(change)) ) + 
@@ -186,7 +190,8 @@ df_arrests_year_pc %>%
   ylab("Number of Arrests") +
   scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
   scale_x_continuous(breaks = seq( min(df_arrests_year_pc$ARREST_YEAR), max(df_arrests_year_pc$ARREST_YEAR),1)) +
-  geom_text(hjust=0, vjust=-1, size=3)
+  geom_text(hjust=0, vjust=-1, size=3) +
+  geom_point(color = 'red')
 
 ggsave("arrests_year_pc.png", device = "png", path = "img")
 
@@ -207,13 +212,14 @@ df_arrests_drugs %>%
   ylab("Number of Arrests") +
   scale_y_continuous(breaks = scales::breaks_extended(n=10), labels=comma) +
   scale_x_continuous(breaks = seq( min(df_arrests_drugs$ARREST_YEAR), max(df_arrests_drugs$ARREST_YEAR), 1)) +
-  geom_text(hjust=0, vjust=-1, size=3)
+  geom_text(hjust=0, vjust=-1, size=3) +
+  geom_point(color='steel blue')
 
 ggsave("arrests_drugs.png", device = "png", path = "img")
 
 
 # Plot drug arrests percent change
-df_arrests_drugs_pc = mutate(df_arrests_drugs, change=(1- total_arrests/lag(total_arrests)))
+df_arrests_drugs_pc = mutate(df_arrests_drugs, change=(total_arrests/lag(total_arrests))-1)
 
 df_arrests_drugs_pc %>% 
   ggplot( aes(x=ARREST_YEAR, y=total_arrests, label=scales::percent(change))) +
@@ -223,11 +229,35 @@ df_arrests_drugs_pc %>%
   ylab("Number of Arrests") +
   scale_y_continuous(breaks = scales::breaks_extended(n=10), labels = comma) +
   scale_x_continuous(breaks = seq( min(df_arrests_drugs_pc$ARREST_YEAR), max(df_arrests_drugs_pc$total_arrests), 1)) +
-  geom_text(hjust=0, vjust=-1, size=3)
+  geom_text(hjust=0, vjust=-1, size=3) +
+  geom_point(color='red')
 
 ggsave("arrests_drugs_pc.png", device = "png", path = "img")
 
 
 # --------------------------------------------------
 
+# Plot total arrests for line with each year
+df_arrests_month = df %>%
+  group_by(ARREST_YEAR, ARREST_MONTH) %>%
+  summarize(total_arrests = n())
 
+df_arrests_month %>%
+  ggplot(aes(x=ARREST_MONTH, y=total_arrests, group=ARREST_YEAR, color=ARREST_YEAR, labels=ARREST_YEAR)) +
+  geom_line() +
+  xlab('Month') +
+  ylab('Number of Arrests') +
+  scale_x_datetime(labels = "%B", date_breaks = "1 month")
+                 
+# ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
+
+
+# --------------------------------------------------
+
+# Reducing crime categories for simpler reporting
+
+# Count all KY_CD
+length(unique(df$KY_CD))
+# There are 75 different values for KY_CD
+
+df2 = df
