@@ -540,4 +540,30 @@ ggsave('arrests_age.png', device='png', path='img')
 
 # --------------------------------------------------
 
-# 
+# Plot arrests by age for felonies
+
+df_arrests_age_fel = df %>%
+  filter(LAW_CAT_CD == 'F') %>%
+  group_by(AGE_GROUP) %>%
+  summarize(total_arrests=n())
+
+df_arrests_age_fel
+df_arrests_age
+df_arrests_age_fel %>%
+  ggplot(aes(x=AGE_GROUP, y=total_arrests), label=total_arrets) +
+  geom_bar(stat='identity', fill='red3') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  ggtitle('Felony Arrests by Age') +
+  xlab('Age Group') +
+  ylab('Number of Arrests')
+
+ggsave('arrests_age_fel.png', device='png', path='img')
+
+
+# --------------------------------------------------
+
+# Plot arrests by age & felonies on same chart
+
+df_arrests_age_comb = merge(df_arrests_age, df_arrests_age_fel)
+df_arrests_age_comb
