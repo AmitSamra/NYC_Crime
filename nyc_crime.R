@@ -243,7 +243,7 @@ df_arrests_year %>%
   geom_text(hjust=0, vjust=-1, size=3) +
   geom_point(color='steel blue')
 
-ggsave("arrests_year.png", device = "png", path = "img")
+ggsave("arrests_year.png", device="png", path="img")
 
 
 # Add percentage change
@@ -260,7 +260,7 @@ df_arrests_year_pc %>%
   geom_text(hjust=0, vjust=-1, size=3) +
   geom_point(color = 'red')
 
-ggsave("arrests_year_pc.png", device = "png", path = "img")
+ggsave("arrests_year_pc.png", device="png", path="img")
 
 
 # --------------------------------------------------
@@ -282,7 +282,7 @@ df_arrests_drugs %>%
   geom_text(hjust=0, vjust=-1, size=3) +
   geom_point(color='steel blue')
 
-ggsave("arrests_drugs.png", device = "png", path = "img")
+ggsave("arrests_drugs.png", device="png", path="img")
 
 
 # Plot drug arrests percent change
@@ -299,25 +299,80 @@ df_arrests_drugs_pc %>%
   geom_text(hjust=0, vjust=-1, size=3) +
   geom_point(color='red')
 
-ggsave("arrests_drugs_pc.png", device = "png", path = "img")
+ggsave("arrests_drugs_pc.png", device="png", path="img")
 
 
 # --------------------------------------------------
-# ???
-# Plot total arrests for line with each year
-df_arrests_month = df %>%
+# ????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+# Plot total arrests with line for each year
+df_arrests_month_year = df %>%
   group_by(ARREST_YEAR, ARREST_MONTH) %>%
   summarize(total_arrests = n())
-df_arrests_month
-df_arrests_month %>%
-  ggplot(aes(x=ARREST_MONTH, y=total_arrests, group=ARREST_YEAR, color=ARREST_YEAR, labels=ARREST_YEAR)) +
+
+df_arrests_month_year = df_arrests_month_year %>%
+  mutate(ARREST_MONTH = factor(month.abb[months], levels = month.abb))
+
+df_arrests_month_year
+
+df_arrests_month_year %>%
+  ggplot(aes(x=ARREST_MONTH, y=total_arrests, group=ARREST_YEAR, color=as.factor(ARREST_YEAR))) +
   geom_line() +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
-  #scale_x_discrete() +
+  #geom_text() +
+  ggtitle('Arrests by Month per Year') +
   xlab('Month') +
-  ylab('Number of Arrests')
-                 
-month_name = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
+  ylab('Number of Arrests') +
+  scale_color_manual(values=c('blue','red','black','yellow','green','purple','orange','dark green','gray48','steel blue',
+                              'mediumvioletred','saddlebrown','powderblue','navy'))
+# as.factor(ARREST_YEAR) is needed because an error arises
+
+ggsave('arrests_month_year.png', device='png', path='img')
+
+
+# --------------------------------------------------
+
+# Arrests by Month
+df_arrests_month_name = df %>%
+  group_by(ARREST_MONTH) %>%
+  summarize(total_arrests = n())
+
+df_arrests_month_name
+
+df_arrests_month_name= df_arrests_month %>% 
+  mutate(ARREST_MONTH = factor(month.abb[months], levels = month.abb))
+
+df_arrests_month_name
+
+df_arrests_month_name %>%
+  ggplot(aes(x=ARREST_MONTH, y=total_arrests), label=total_arrests) +
+  geom_bar(stat='identity', fill='red3') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  ggtitle('Arrests by Month') +
+  ylab('Numer of Arrests') +
+  xlab('Month')
+
+ggsave('arrests_month_name.png', device='png', path='img')
+
+# or we can use the number of the month
+
+df_arrests_month = df %>%
+  group_by(ARREST_MONTH) %>%
+  summarize(total_arrests = n())
+
+df_arrests_month = df_arrests_month %>%
+  mutate(ARREST_MONTH = factor(ARREST_MONTH))
+
+df_arrests_month %>%
+  ggplot(aes(x=ARREST_MONTH, y=total_arrests), label=total_arrests) +
+  geom_bar(stat='identity', fill='red3') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  ggtitle('Arrests by Month') +
+  ylab('Numer of Arrests') +
+  xlab('Month') 
+
+ggsave('arrests_month.png', device='png', path='img')
 
 
 # --------------------------------------------------
@@ -408,52 +463,4 @@ ggsave('arrests_boro.png', device='png', path='img')
 
 # --------------------------------------------------
 
-# Arrests by Month
-month_name = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
 
-df_arrests_month_name = df %>%
-  group_by(ARREST_MONTH) %>%
-  summarize(total_arrests = n())
-
-df_arrests_month_name
-
-df_arrests_month_name= df_arrests_month %>% 
-  mutate(ARREST_MONTH = factor(month.abb[months], levels = month.abb))
-
-df_arrests_month_name
-
-df_arrests_month_name %>%
-  ggplot(aes(x=ARREST_MONTH, y=total_arrests), label=total_arrests) +
-  geom_bar(stat='identity', fill='red3') +
-  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
-  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
-  ggtitle('Arrests by Month') +
-  ylab('Numer of Arrests') +
-  xlab('Month')
-
-ggsave('arrests_month_name.png', device='png', path='img')
-
-# or we can use the number of the month
-
-df_arrests_month = df %>%
-  group_by(ARREST_MONTH) %>%
-  summarize(total_arrests = n())
-
-df_arrests_month = df_arrests_month %>%
-  mutate(ARREST_MONTH = factor(ARREST_MONTH))
-
-df_arrests_month %>%
-  ggplot(aes(x=ARREST_MONTH, y=total_arrests), label=total_arrests) +
-  geom_bar(stat='identity', fill='red3') +
-  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
-  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
-  ggtitle('Arrests by Month') +
-  ylab('Numer of Arrests') +
-  xlab('Month') 
-
-ggsave('arrests_month.png', device='png', path='img')
-
-
-# --------------------------------------------------
-
-# 
