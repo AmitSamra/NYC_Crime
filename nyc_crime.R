@@ -463,4 +463,81 @@ ggsave('arrests_boro.png', device='png', path='img')
 
 # --------------------------------------------------
 
+# Create subsets to merge & compute correlation matrix
 
+df_2019 = df %>%
+  filter(ARREST_YEAR == 2019) %>%
+  group_by(ARREST_MONTH) %>%
+  summarize('2019' = n())
+
+df_2015 = df %>%
+  filter(ARREST_YEAR == 2015) %>%
+  group_by(ARREST_MONTH) %>%
+  summarize('2015' = n())
+
+df_2011 = df %>%
+  filter(ARREST_YEAR == 2011) %>%
+  group_by(ARREST_MONTH) %>%
+  summarize('2011' = n())
+
+df_11_15 = merge(df_2011,df_2015)
+df_11_15_19 = merge(df_11_15,df_2019)
+df_11_15_19
+
+# Drop month column
+df_11_15_19 = select(df_11_15_19, -1)
+df_11_15_19
+
+# Compute correlation matrix
+cor(df_11_15_19)
+
+# Plot correlations
+corrplot(cor(df_11_15_19), method='circle')
+
+# Compute correlation for only subset of columns
+cor(df_11_15_19[1],df_11_15_19[2])
+
+
+# --------------------------------------------------
+
+# Plot total arrests by age
+
+df_arrests_age = df %>%
+  group_by(AGE_GROUP) %>%
+  summarize(total_arrests=n())
+
+# This yields in a weird result because the age groups are incorrect
+df_arrests_age
+
+# There are 91 distinct values in the AGE_GROUP column
+unique(df$AGE_GROUP)
+
+# Let's replace the values don't make sense with "UNKNOWN"
+
+good_ages = c('<18', '18-24', '25-44', '45-64', '65+')
+df$AGE_GROUP[!df$AGE_GROUP %in% good_ages] = 'UNKNOWN'
+
+# Now there are only 6 distinct values in AGE_GROUP
+unique(df$AGE_GROUP)
+
+# We must filter only the results that make sense
+
+df_arrests_age = df %>%
+  group_by(AGE_GROUP) %>%
+  summarize(total_arrests=n())
+
+df_arrests_age %>%
+  ggplot(aes(x=AGE_GROUP, y=total_arrests), label=total_arrets) +
+  geom_bar(stat='identity', fill='dark green') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  ggtitle('Arrests by Age') +
+  xlab('Age Group') +
+  ylab('Number of Arrests')
+
+ggsave('arrests_age.png', device='png', path='img')
+
+
+# --------------------------------------------------
+
+# 
