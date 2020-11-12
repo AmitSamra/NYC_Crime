@@ -411,18 +411,18 @@ ggsave('arrests_boro.png', device='png', path='img')
 # Arrests by Month
 month_name = c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
 
-df_arrests_month = df %>%
+df_arrests_month_name = df %>%
   group_by(ARREST_MONTH) %>%
   summarize(total_arrests = n())
 
-df_arrests_month
+df_arrests_month_name
 
-df_arrests_month= df_arrests_month %>% 
+df_arrests_month_name= df_arrests_month %>% 
   mutate(ARREST_MONTH = factor(month.abb[months], levels = month.abb))
 
-df_arrests_month
+df_arrests_month_name
 
-df_arrests_month %>%
+df_arrests_month_name %>%
   ggplot(aes(x=ARREST_MONTH, y=total_arrests), label=total_arrests) +
   geom_bar(stat='identity', fill='red3') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
@@ -433,16 +433,27 @@ df_arrests_month %>%
 
 ggsave('arrests_month_name.png', device='png', path='img')
 
-months = c(1,2,3,4,5,6,7,8,9,10,11,12)        
-totals = c(437318,406597,454125,432062,443323,414061,418627,428530,400509,427900,378849,344718)
-test_df = data.frame(months, totals)
-test_df
-test_df %>% mutate(months = factor(months, levels =months))
-test_df
-test_df %>%
-  ggplot(aes(x=months, y=totals)) +
+# or we can use the number of the month
+
+df_arrests_month = df %>%
+  group_by(ARREST_MONTH) %>%
+  summarize(total_arrests = n())
+
+df_arrests_month = df_arrests_month %>%
+  mutate(ARREST_MONTH = factor(ARREST_MONTH))
+
+df_arrests_month %>%
+  ggplot(aes(x=ARREST_MONTH, y=total_arrests), label=total_arrests) +
   geom_bar(stat='identity', fill='red3') +
-  scale_y_continuous(breaks=scales::breaks_extended(n=10)) +
-  ggtitle('Amount by Month') +
-  ylab('Amount') +
-  xlab('Month')
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  ggtitle('Arrests by Month') +
+  ylab('Numer of Arrests') +
+  xlab('Month') 
+
+ggsave('arrests_month.png', device='png', path='img')
+
+
+# --------------------------------------------------
+
+# 
