@@ -16,6 +16,8 @@ library(corrplot)
 library(scales)
 library(ggrepel)
 
+options(scipen = 999)
+
 # --------------------------------------------------
 # Data Processing 
 
@@ -329,13 +331,13 @@ df_top_10 = top_n(df_top_10, 10, total_arrests) %>%
 df_top_10 %>%
   ggplot(aes(x=OFNS_DESC, y=total_arrests, label=total_arrests)) +
   geom_bar(stat='identity', fill='steel blue') +
-  ggtitle('Arrests by Offense Description') +
-  xlab('Offense Description') +
-  ylab('Number of Arrests') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  aes(x = reorder(OFNS_DESC, -total_arrests))
+  aes(x = reorder(OFNS_DESC, -total_arrests)) +
+  ggtitle('Arrests by Offense Description') +
+  xlab('Offense Description') +
+  ylab('Number of Arrests')
 
 ggsave('top_10_ofns.png', device='png', path='img')
   
@@ -346,16 +348,17 @@ df_top_cat = df %>%
   summarize(total_arrests = n())
 df_top_cat = top_n(df_top_cat,length(unique(df$CATEGORY)),total_arrests) %>%
   arrange(desc(total_arrests))
+
 df_top_cat %>%
   ggplot(aes(x=CATEGORY, y=total_arrests, label=total_arrests)) +
   geom_bar(stat='identity', fill='steel blue') +
-  ggtitle('Arrests by Category') +
-  xlab('Category') +
-  ylab('Number of Arrests') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  aes(x=reorder(CATEGORY, -total_arrests))
+  aes(x=reorder(CATEGORY, -total_arrests)) +
+  ggtitle('Arrests by Category') +
+  xlab('Category') +
+  ylab('Number of Arrests')
 
 ggsave('top_10_cat.png', device='png', path='img')
 
@@ -367,20 +370,44 @@ ggsave('top_10_cat.png', device='png', path='img')
 df_crime_type = df %>%
   group_by(LAW_CAT_CD) %>%
   summarize(total_arrests = n())
+
 df_crime_type %>%
   ggplot(aes(x=LAW_CAT_CD, y=total_arrests), label=total_arrests) +
-  geom_bar(stat='identity', fill='red') +
-  ggtitle('Arrests by Crime Type') +
-  xlab('Crime Type') +
-  ylab('Number of Arrests') +
+  geom_bar(stat='identity', fill='red3') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
-  aes(x=reorder(LAW_CAT_CD, -total_arrests))
+  aes(x=reorder(LAW_CAT_CD, -total_arrests)) +
+  ggtitle('Arrests by Crime Type') +
+  xlab('Crime Type') +
+  ylab('Number of Arrests')
 
-ggsave('crime_type.png', device='png', path='img')
+ggsave('arrests_type.png', device='png', path='img')
 
 
 # --------------------------------------------------
+
+# Arrests by Borough
+
+df_arrests_boro = df %>%
+  group_by(ARREST_BORO) %>%
+  summarize(total_arrests = n())
+
+df_arrests_boro %>% 
+  ggplot(aes(x=ARREST_BORO, y=total_arrests), label=total_arrests) +
+  geom_bar(stat='identity', fill='steel blue') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  aes(x=reorder(ARREST_BORO, -total_arrests), label= 'Total') +
+  ggtitle('Arrests by Borough') +
+  ylab('Numer of Arrests') +
+  xlab('Borough')
+
+ggsave('arrests_boro.png', device='png', path='img')
+
+
+# --------------------------------------------------
+
+# 
 
 
 
