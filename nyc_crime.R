@@ -15,6 +15,7 @@ library(ggplot2)
 library(corrplot)
 library(scales)
 library(ggrepel)
+#library(tidyverse)
 
 options(scipen=999)
 
@@ -596,22 +597,25 @@ ggsave('arrests_age_all_fel.png', device='png', path='img')
 
 df_sex = df %>%
   group_by(PERP_SEX) %>%
-  summarize(total_arrests = n())
-
+  summarize(total_arrests = n()) %>%
+  arrange(desc(total_arrests))
+df_sex
 df_sex = df_sex %>%
-  mutate(prop=(round(total_arrests/sum(total_arrests)*100,0))) %>%
-  mutate(ypos = cumsum(prop)- 0.5*prop)
-
+  mutate(prop=total_arrests/sum(total_arrests), prop=scales::percent(prop,.10))
 df_sex
 
 df_sex %>%
-  ggplot(aes(x='', y=total_arrests, label=prop, fill=PERP_SEX)) +
+  ggplot(aes(x='', y=total_arrests, label=prop, fill=factor(PERP_SEX))) +
   geom_bar(stat='identity', width=1) +
   coord_polar('y', start=0) +
   theme_void() +
   scale_fill_manual(labels=c('Female','Male'), values=c('lightpink2','steel blue')) +
-  geom_text(hjust=-2, vjust=-2, size=3, aes(label=prop), color="white") +
+  geom_text(hjust=0, vjust=0, size=3, aes(label=prop), color="black", position=position_stack(vjust=.5)) +
   labs(title='Arrest Share by Sex', fill='Sex')
 
-# the labels are switched above
+ggsave('arrests_sex.png', device='png', path='img')
 
+
+# --------------------------------------------------
+
+# 
