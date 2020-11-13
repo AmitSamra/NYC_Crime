@@ -67,6 +67,24 @@ Again, we see a precipitous drop in both 2011 and 2014.
 
 ![arrests_drugs_pc.png](img/arrests_drugs_pc.png)
 
+Brooklyn and Manhattan are the leading boroughs for arrests. 
+
+![arrests_boro.png](img/arrests_boro.png)
+
+Most arrests occur for the 25-44 age cohort followed by the 18-24 cohort. 
+
+![arrests_age.png](img/arrests_age.png)
+
+The same trends are true for felony arrests alone. 
+
+![arrests_age_fel.png](img/arrests_age_fel.png)
+
+To see the trend more clearly, we can plot the arrests by cohort for all crimes vs. only felonies on the same chart. 
+
+![arrests_age_all_fel.png](img/arrests_age_all_fel.png)
+
+
+
 
 [Home](https://github.com/AmitSamra/NYC_Crime#)
 
