@@ -585,23 +585,12 @@ df_test2=data.frame(ages_test,values_test)
 df_test2
 
 df_combined = rbind(df_test1, df_test2)
+df_combined = dplyr::bind_rows(df_test1, df_test2, .id='id')
 df_combined
 
 df_combined %>%
-  ggplot(aes(x=ages_test, y=values_test, label=values_test)) +
+  ggplot(aes(x=ages_test, y=values_test, fill=id),label=values_test) +
   geom_bar(stat='identity') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
-  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(values_test))) +
-  scale_color_manual(values=c('blue','red'))
-
-
-df_arrests_month_year %>%
-  ggplot(aes(x=ARREST_MONTH, y=total_arrests, group=ARREST_YEAR, color=as.factor(ARREST_YEAR))) +
-  geom_line() +
-  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
-  #geom_text() +
-  ggtitle('Arrests by Month per Year') +
-  xlab('Month') +
-  ylab('Number of Arrests') +
-  scale_color_manual(values=c('blue','red','black','yellow','green','purple','orange','dark green','gray48','steel blue',
-                              'mediumvioletred','saddlebrown','powderblue','navy'))
+  geom_text(hjust=.5, vjust=-3, size=3, aes(label=comma(values_test))) +
+  scale_color_manual(values=c('navy blue','steel blue'))
