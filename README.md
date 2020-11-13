@@ -25,12 +25,24 @@ In fact, there are 85 distinct values for OFNS_DESC. We can create a new column 
 
 With only 9 categories, it becomes easier to analyze the data for practical purposes.
 
-![old_cat](img/old_cat.png)
+![old_cat](img/new_cat.png)
 
 [Home](https://github.com/AmitSamra/NYC_Crime#)
 
 # 2. Data Analysis & Visualization
 
+We begin our analysis of viewing a simple line plot of arrests over time. We can see a sharp increase in arrests starting in 2007, which ultimately peak in 2010, followed by gradual decline until 2014. After 2014, we notice noticeable drop in arrests.
+
+![arrests_year](img/arrests_year.png)
+
+By the end of 2014, arrests had fallen over 12.5%. One possible cause of the reduction in arrests may have been the inauguration of Bill De Blasio as mayor of NYC. According to Wikipedia, ["Exit polls showed that the issue that most aided de Blasio's primary victory was his unequivocal opposition to "stop and frisk"](https://en.wikipedia.org/wiki/Bill_de_Blasio#2013_election).
+
+![arrests_year_pc](img/arrests_year_pc.png)
+
+
+
+
 
 
 [Home](https://github.com/AmitSamra/NYC_Crime#)
+
