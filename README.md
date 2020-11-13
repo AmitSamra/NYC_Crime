@@ -39,11 +39,23 @@ By the end of 2014, arrests had fallen over 12.5%. One possible cause of the red
 
 ![arrests_year_pc.png](img/arrests_year_pc.png)
 
-The overwhelming majority of crimes were misdemeanors followed by felonies. Lesser crimes like violations and infractions were rare in comparison. 
+Another way of analyzing the trends in arrests over time is viewing a trend line for each year. From this chart we can see a reduction in arrests over time, with 2019 having the lowest number of arrests since 2006. We can also see some seasonality in arrests, which tend to peak in March and October of every year. 
+
+![arrests_month_year.png](img/arrests_month_year.png)
+
+A bar graph of arrests by month shows that arrests occur more in spring and autumn. 
+
+![arrests_month.png](img/arrests_month.png)
+
+The overwhelming majority of arrests were related misdemeanors followed by felonies. Arrests for lesser crimes like violations and infractions were rare in comparison. 
 
 ![arrests_type.png](img/arrests_type.png)
 
-Using the 9 categories we created, we see that THEFT & FRAUD and DRUGS were the two single largest categories of crime. 
+Using the 9 categories we created, we see that THEFT & FRAUD and DRUGS were the two single largest categories of arrests. 
+
+![top_10_cat.png](img/top_10_cat.png)
+
+An even more granular view using OFNS_DESC shows that DRUGS were the single largest reason for arrests. 
 
 ![top_10_ofns.png](img/top_10_ofns.png)
 
