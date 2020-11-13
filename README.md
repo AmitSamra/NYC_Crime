@@ -83,8 +83,14 @@ To see the trend more clearly, we can plot the arrests by cohort for all crimes 
 
 ![arrests_age_all_fel.png](img/arrests_age_all_fel.png)
 
+Over 83% of those arrested were men. 
 
+![arrests_sex.png](img/arrests_sex.png)
 
+The same trend hold for felony arrests. 
+
+![arrests_sex_fel.png](img/arrests_sex_fel.png)
+
+This concludes my presentation. Thank you! 
 
 [Home](https://github.com/AmitSamra/NYC_Crime#)
-
