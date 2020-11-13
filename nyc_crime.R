@@ -528,7 +528,7 @@ df_arrests_age = df %>%
 
 df_arrests_age %>%
   ggplot(aes(x=AGE_GROUP, y=total_arrests), label=total_arrets) +
-  geom_bar(stat='identity', fill='dark green') +
+  geom_bar(stat='identity', fill='aquamarine4') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
   ggtitle('Arrests by Age') +
@@ -549,7 +549,7 @@ df_arrests_age_fel = df %>%
 
 df_arrests_age_fel %>%
   ggplot(aes(x=AGE_GROUP, y=total_arrests), label=total_arrets) +
-  geom_bar(stat='identity', fill='red3') +
+  geom_bar(stat='identity', fill='aquamarine3') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
   ggtitle('Felony Arrests by Age') +
@@ -563,17 +563,31 @@ ggsave('arrests_age_fel.png', device='png', path='img')
 
 # Plot all arrests by age & arrests for felonies by age on same chart
 
-df_arrests_age_comb = rbind(df_arrests_age, df_arrests_age_fel)
+df_arrests_age_comb = dplyr::bind_rows(df_arrests_age, df_arrests_age_fel, .id='id')
 df_arrests_age_comb
+
 df_arrests_age_comb %>%
-  ggplot(aes(x=AGE_GROUP, y=total_arrests), label=total_arrets, color=total_arrests) +
+  ggplot(aes(x=AGE_GROUP, y=total_arrests, fill=id), label=total_arrets) +
   geom_bar(stat='identity') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
   ggtitle('All Arrests vs. Felony Arrests by Age') +
-  xlab('Age Group') +
-  ylab('Number of Arrests') +
-  scale_color_manual(values=c('dark green','green'))
+  scale_fill_manual(labels=c('All Arrests','Felonies'), values=c('aquamarine4','aquamarine3')) +
+  labs(title='All Arrests vs. Felony Arrests by Age', x='Age Group', y='Number of Arrests', fill='Arrest Severity')
+
+# if the labels overlapping are troublesome, use ggrepel
+
+df_arrests_age_comb %>%
+  ggplot(aes(x=AGE_GROUP, y=total_arrests, fill=id, label=total_arrests)) +
+  geom_bar(stat='identity') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  #geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  ggtitle('All Arrests vs. Felony Arrests by Age') +
+  scale_fill_manual(labels=c('All Arrests','Felonies'), values=c('aquamarine4','aquamarine3')) +
+  labs(title='All Arrests vs. Felony Arrests by Age', x='Age Group', y='Number of Arrests', fill='Arrest Severity') +
+  geom_text_repel(vjust=2, direction='y', segment.color='transparent', aes(label=comma(total_arrests)), size=3)
+
+ggsave('arrests_age_all_fel.png', device='png', path='img')
 
 ages_test=c('<18','18-24','25-44','45-64','65+',"UNKNOWN")
 values_test=c(411694,1313082,2301521,918416,41728,178)
@@ -588,9 +602,11 @@ df_combined = rbind(df_test1, df_test2)
 df_combined = dplyr::bind_rows(df_test1, df_test2, .id='id')
 df_combined
 
-df_combined %>%
-  ggplot(aes(x=ages_test, y=values_test, fill=id),label=values_test) +
+  ggplot(aes(x=ages_test, y=values_test, fill=id, label=values_test)) +
   geom_bar(stat='identity') +
-  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
-  geom_text(hjust=.5, vjust=-3, size=3, aes(label=comma(values_test))) +
-  scale_color_manual(values=c('navy blue','steel blue'))
+  scale_y_continuous(breaks=scales::breaks_extended(n=10)) +
+  #geom_text(hjust=.5, vjust=-3, size=3) +
+  scale_fill_manual(values=c('aquamarine4','aquamarine3'), labels=c('All Values','Subset Values')) +
+  labs(title='All Values by Age', x='Ages', y='Number', fill='Key Title') +
+  geom_text_repel(direction='y')
+  
