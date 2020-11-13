@@ -33,13 +33,19 @@ With only 9 categories, it becomes easier to analyze the data for practical purp
 
 We begin our analysis of viewing a simple line plot of arrests over time. We can see a sharp increase in arrests starting in 2007, which ultimately peak in 2010, followed by gradual decline until 2014. After 2014, we notice noticeable drop in arrests.
 
-![arrests_year](img/arrests_year.png)
+![arrests_year.png](img/arrests_year.png)
 
-By the end of 2014, arrests had fallen over 12.5%. One possible cause of the reduction in arrests may have been the inauguration of Bill De Blasio as mayor of NYC. According to Wikipedia, ["Exit polls showed that the issue that most aided de Blasio's primary victory was his unequivocal opposition to "stop and frisk"](https://en.wikipedia.org/wiki/Bill_de_Blasio#2013_election).
+By the end of 2014, arrests had fallen over 12.5%. One possible cause of the reduction in arrests may have been the inauguration of Bill De Blasio as mayor of NYC. According to Wikipedia, ["Exit polls showed that the issue that most aided de Blasio's primary victory was his unequivocal opposition to "stop and frisk"](https://en.wikipedia.org/wiki/Bill_de_Blasio#2013_election). It is important to note that the reduction in arrests does not imply a reduction in crime. 
 
-![arrests_year_pc](img/arrests_year_pc.png)
+![arrests_year_pc.png](img/arrests_year_pc.png)
 
+The overwhelming majority of crimes were misdemeanors followed by felonies. Lesser crimes like violations and infractions were rare in comparison. 
 
+![arrests_type.png](img/arrests_type.png)
+
+Using the 9 categories we created, we see that THEFT & FRAUD and DRUGS were the two single largest categories of crime. 
+
+![top_10_ofns.png](img/top_10_ofns.png)
 
 
 
