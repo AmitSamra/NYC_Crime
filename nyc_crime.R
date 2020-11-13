@@ -547,8 +547,6 @@ df_arrests_age_fel = df %>%
   group_by(AGE_GROUP) %>%
   summarize(total_arrests=n())
 
-df_arrests_age_fel
-df_arrests_age
 df_arrests_age_fel %>%
   ggplot(aes(x=AGE_GROUP, y=total_arrests), label=total_arrets) +
   geom_bar(stat='identity', fill='red3') +
@@ -563,7 +561,47 @@ ggsave('arrests_age_fel.png', device='png', path='img')
 
 # --------------------------------------------------
 
-# Plot arrests by age & felonies on same chart
+# Plot all arrests by age & arrests for felonies by age on same chart
 
-df_arrests_age_comb = merge(df_arrests_age, df_arrests_age_fel)
+df_arrests_age_comb = rbind(df_arrests_age, df_arrests_age_fel)
 df_arrests_age_comb
+df_arrests_age_comb %>%
+  ggplot(aes(x=AGE_GROUP, y=total_arrests), label=total_arrets, color=total_arrests) +
+  geom_bar(stat='identity') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
+  ggtitle('All Arrests vs. Felony Arrests by Age') +
+  xlab('Age Group') +
+  ylab('Number of Arrests') +
+  scale_color_manual(values=c('dark green','green'))
+
+ages_test=c('<18','18-24','25-44','45-64','65+',"UNKNOWN")
+values_test=c(411694,1313082,2301521,918416,41728,178)
+df_test1=data.frame(ages_test,values_test)
+df_test1
+
+values_test=c(134924,350794,612476,228237,10472,49)
+df_test2=data.frame(ages_test,values_test)
+df_test2
+
+df_combined = rbind(df_test1, df_test2)
+df_combined
+
+df_combined %>%
+  ggplot(aes(x=ages_test, y=values_test, label=values_test)) +
+  geom_bar(stat='identity') +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(values_test))) +
+  scale_color_manual(values=c('blue','red'))
+
+
+df_arrests_month_year %>%
+  ggplot(aes(x=ARREST_MONTH, y=total_arrests, group=ARREST_YEAR, color=as.factor(ARREST_YEAR))) +
+  geom_line() +
+  scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
+  #geom_text() +
+  ggtitle('Arrests by Month per Year') +
+  xlab('Month') +
+  ylab('Number of Arrests') +
+  scale_color_manual(values=c('blue','red','black','yellow','green','purple','orange','dark green','gray48','steel blue',
+                              'mediumvioletred','saddlebrown','powderblue','navy'))
