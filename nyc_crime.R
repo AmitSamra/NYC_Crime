@@ -593,20 +593,19 @@ ggsave('arrests_age_all_fel.png', device='png', path='img')
 
 # --------------------------------------------------
 
-# Plot by sex
+# Pie chart by sex
 
 df_sex = df %>%
   group_by(PERP_SEX) %>%
   summarize(total_arrests = n()) %>%
   arrange(desc(total_arrests))
-df_sex
+
 df_sex = df_sex %>%
   mutate(prop=total_arrests/sum(total_arrests), prop=scales::percent(prop,.10))
-df_sex
 
 df_sex %>%
-  ggplot(aes(x='', y=total_arrests, label=prop, fill=factor(PERP_SEX))) +
-  geom_bar(stat='identity', width=1) +
+  ggplot(aes(x='', y=total_arrests, label=prop, fill=PERP_SEX)) +
+  geom_bar(stat='identity') +
   coord_polar('y', start=0) +
   theme_void() +
   scale_fill_manual(labels=c('Female','Male'), values=c('lightpink2','steel blue')) +
@@ -618,4 +617,34 @@ ggsave('arrests_sex.png', device='png', path='img')
 
 # --------------------------------------------------
 
-# 
+# Doughnut chart by sex for felonies
+
+df_sex_fel = df %>%
+  filter(LAW_CAT_CD=='F') %>%
+  group_by(PERP_SEX) %>%
+  summarize(total_arrests = n()) %>%
+  arrange(desc(total_arrests))
+
+df_sex_fel = df_sex_fel %>%
+  mutate(prop=total_arrests/sum(total_arrests), prop=scales::percent(prop,.10))
+
+df_sex_fel %>%
+  ggplot(aes(x=2, y=total_arrests, label=prop, fill=PERP_SEX)) +
+  geom_bar(stat='identity') +
+  coord_polar(theta='y', start=1) +
+  #theme_void() +
+  scale_fill_manual(labels=c('Female','Male'), values=c('lightpink2','steel blue')) +
+  geom_text(hjust=0, vjust=0, size=3, aes(label=prop), color="black", position=position_stack(vjust=.5)) +
+  labs(title='Arrest Share by Sex', fill='Sex') +
+  xlim(0.5,2.5) +
+  theme(panel.background = element_blank(),
+        axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank(), 
+        plot.title = element_text(hjust = 0.5, size = 20))
+  
+
+ggsave('arrests_sex_fel.png', device='png', path='img')
+
+
