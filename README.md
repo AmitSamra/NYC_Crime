@@ -59,7 +59,13 @@ An even more granular view using OFNS_DESC shows that DRUGS were the single larg
 
 ![top_10_ofns.png](img/top_10_ofns.png)
 
+Filtering the data for only drug arrests, we see that arrests for drugs have fallen each since 2011. 
 
+![arrests_drugs.png](img/arrests_drugs.png)
+
+Again, we see a precipitous drop in both 2011 and 2014. 
+
+![arrests_drugs_pc.png](img/arrests_drugs_pc.png)
 
 
 [Home](https://github.com/AmitSamra/NYC_Crime#)
