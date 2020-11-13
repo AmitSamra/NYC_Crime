@@ -589,24 +589,17 @@ df_arrests_age_comb %>%
 
 ggsave('arrests_age_all_fel.png', device='png', path='img')
 
-ages_test=c('<18','18-24','25-44','45-64','65+',"UNKNOWN")
-values_test=c(411694,1313082,2301521,918416,41728,178)
-df_test1=data.frame(ages_test,values_test)
-df_test1
 
-values_test=c(134924,350794,612476,228237,10472,49)
-df_test2=data.frame(ages_test,values_test)
-df_test2
+# --------------------------------------------------
 
-df_combined = rbind(df_test1, df_test2)
-df_combined = dplyr::bind_rows(df_test1, df_test2, .id='id')
-df_combined
+# Plot by sex
 
-  ggplot(aes(x=ages_test, y=values_test, fill=id, label=values_test)) +
+df_sex = df %>%
+  group_by(PERP_SEX) %>%
+  summarize(total_arrests = n())
+
+df_sex %>%
+  ggplot(aes(x='', y=total_arrests), label=total_arrets, fill=total_arrests) +
   geom_bar(stat='identity') +
-  scale_y_continuous(breaks=scales::breaks_extended(n=10)) +
-  #geom_text(hjust=.5, vjust=-3, size=3) +
-  scale_fill_manual(values=c('aquamarine4','aquamarine3'), labels=c('All Values','Subset Values')) +
-  labs(title='All Values by Age', x='Ages', y='Number', fill='Key Title') +
-  geom_text_repel(direction='y')
-  
+  coord_polar('y', start=0) +
+  theme_void()
