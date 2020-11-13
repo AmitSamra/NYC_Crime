@@ -617,7 +617,7 @@ ggsave('arrests_sex.png', device='png', path='img')
 
 # --------------------------------------------------
 
-# Doughnut chart by sex for felonies
+# Doughnut chart for felony arrests by sex
 
 df_sex_fel = df %>%
   filter(LAW_CAT_CD=='F') %>%
@@ -635,15 +635,14 @@ df_sex_fel %>%
   #theme_void() +
   scale_fill_manual(labels=c('Female','Male'), values=c('lightpink2','steel blue')) +
   geom_text(hjust=0, vjust=0, size=3, aes(label=prop), color="black", position=position_stack(vjust=.5)) +
-  labs(title='Arrest Share by Sex', fill='Sex') +
+  labs(title='Felony Arrest Share by Sex', fill='Sex') +
   xlim(0.5,2.5) +
-  theme(panel.background = element_blank(),
-        axis.line = element_blank(),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title = element_blank(), 
-        plot.title = element_text(hjust = 0.5, size = 20))
-  
+  theme(panel.background=element_blank(),
+        axis.line=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank(), 
+        plot.title=element_text(hjust=0.5, size=20))
 
 ggsave('arrests_sex_fel.png', device='png', path='img')
 
