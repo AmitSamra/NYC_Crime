@@ -597,9 +597,13 @@ ggsave('arrests_age_all_fel.png', device='png', path='img')
 df_sex = df %>%
   group_by(PERP_SEX) %>%
   summarize(total_arrests = n())
+df_sex
 
 df_sex %>%
-  ggplot(aes(x='', y=total_arrests), label=total_arrets, fill=total_arrests) +
-  geom_bar(stat='identity') +
+  ggplot(aes(x='', y=total_arrests, label=total_arrests, fill=PERP_SEX)) +
+  geom_bar(stat='identity', width=1) +
   coord_polar('y', start=0) +
-  theme_void()
+  theme_void() +
+  scale_fill_manual(labels=c('Female','Male'), values=c('lightpink2','steel blue')) +
+  geom_text(hjust=0, vjust=-2, size=3, aes(label=comma(total_arrests)))
+  
