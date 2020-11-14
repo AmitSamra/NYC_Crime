@@ -27,6 +27,10 @@ With only 9 categories, it becomes easier to analyze the data for practical purp
 
 ![old_cat](img/new_cat.png)
 
+Similarly, we see that there exist numerous age cohorts due to data being entered erroneously. We must replace the incorrect values with "UNKNOWN".
+
+![ages_wrong](img/ages_wrong.png)
+
 [Home](https://github.com/AmitSamra/NYC_Crime#)
 
 # 2. Data Analysis & Visualization
