@@ -606,3 +606,7 @@ df_sex_fel %>%
 
 ggsave('arrests_sex_fel.png', device='png', path='img')
 
+# --------------------------------------------------
+# Data Persistence in NoSQL Database
+# --------------------------------------------------
+

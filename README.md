@@ -8,6 +8,7 @@
 
 1. [Data Processing](https://github.com/AmitSamra/NYC_Crime#1-data-processing)
 2. [Data Analysis & Visualization](https://github.com/AmitSamra/NYC_Crime#2-data-analysis--visualization)
+3. [Data Persistence into NoSQL Database]((https://github.com/AmitSamra/NYC_Crime#3-data-persistence--into--nosql--database))
 
 # 1. Data Processing
 
@@ -94,6 +95,12 @@ Over 83% of those arrested were men.
 The same trend hold for felony arrests. 
 
 ![arrests_sex_fel.png](img/arrests_sex_fel.png)
+
+# 3. Data Persistence into NoSQL Database
+
+And finally, we can store the clean dataframe into a NoSQL Database. 
+
+![nosql_data.png](img/nosql_data.png)
 
 This concludes my presentation. Thank you! 
 
