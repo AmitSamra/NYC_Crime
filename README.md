@@ -8,7 +8,7 @@
 
 1. [Data Processing](https://github.com/AmitSamra/NYC_Crime#1-data-processing)
 2. [Data Analysis & Visualization](https://github.com/AmitSamra/NYC_Crime#2-data-analysis--visualization)
-3. [Data Persistence into NoSQL Database]((https://github.com/AmitSamra/NYC_Crime#3-data-persistence--into--nosql--database))
+3. [Data Persistence into NoSQL Database](https://github.com/AmitSamra/NYC_Crime#3-data-persistence-into-nosql-database)
 
 # 1. Data Processing
 
