@@ -5,7 +5,8 @@
 #install.packages("ggplot2")
 #install.packages("corrplot")
 #install.packages("ggrepel")
-
+#install.packages("usethis")
+install.packages("RSocrata")
 
 # Load packages
 library(readr)
@@ -16,8 +17,22 @@ library(corrplot)
 library(scales)
 library(ggrepel)
 #library(tidyverse)
+library(usethis)
+library(RSocrata)
 
+readRenviron()
 options(scipen=999)
+
+usethis::edit_r_environ()
+
+test_df = read.socrata(
+  'https://data.cityofnewyork.us/resource/8h9b-rp9u.json',
+  app_token=NYC_OpenData_AppToken,
+  email=NYC_OpenData_Email,
+  password=NYC_OpenData_Password
+)
+
+class(test_df)
 
 # --------------------------------------------------
 # Data Processing 
@@ -199,7 +214,8 @@ df %>%
 df %>%
   group_by(ARREST_YEAR) %>%
   summarize(total_arrests = n()) %>%
-  ggplot( aes ( x = ARREST_YEAR, y = total_arrests, group = 1) ) + geom_line()
+  ggplot( aes ( x = ARREST_YEAR, y = total_arrests, group = 1) ) + 
+  geom_line()
 
 # Save plot
 ggsave("arrests_year.png", device = "png", path = "img")
@@ -606,7 +622,7 @@ df_sex = df_sex %>%
 df_sex %>%
   ggplot(aes(x='', y=total_arrests, label=prop, fill=PERP_SEX)) +
   geom_bar(stat='identity') +
-  coord_polar('y', start=0) +
+  coord_polar('y', start=1) +
   theme_void() +
   scale_fill_manual(labels=c('Female','Male'), values=c('lightpink2','steel blue')) +
   geom_text(hjust=0, vjust=0, size=3, aes(label=prop), color="black", position=position_stack(vjust=.5)) +
@@ -645,5 +661,4 @@ df_sex_fel %>%
         plot.title=element_text(hjust=0.5, size=20))
 
 ggsave('arrests_sex_fel.png', device='png', path='img')
-
 
