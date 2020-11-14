@@ -6,7 +6,8 @@
 #install.packages("corrplot")
 #install.packages("ggrepel")
 #install.packages("usethis")
-install.packages("RSocrata")
+#install.packages("RSocrata")
+#install.packages("mongolite")
 
 # Load packages
 library(readr)
@@ -19,6 +20,7 @@ library(ggrepel)
 #library(tidyverse)
 library(usethis)
 library(RSocrata)
+library(mongolite)
 
 readRenviron()
 options(scipen=999)
@@ -32,10 +34,11 @@ test_df = read.socrata(
   password=NYC_OpenData_Password
 )
 
-class(test_df)
+
 
 # --------------------------------------------------
-# Data Processing 
+# Data Processing
+# --------------------------------------------------
 
 # Import CSV and create dataframe using readr
 df = read_csv("raw_data/NYPD_Arrests_Data__Historic_.csv")
@@ -44,103 +47,42 @@ df = read_csv("raw_data/NYPD_Arrests_Data__Historic_.csv")
 # View first few rows of df
 head(df)
 
-
 # View df in new window
 View(df)
 
-
-# Number of rows
-nrow(df)
-
-
 # Count all rows
-# count() is a dplyr function
 count(df)
-
 
 # Show summary of data
 summary(df)
 
-
 # Remove all rows with NAs in any column
 df = na.omit(df)
-
-
-# Show object class
-class(df)
-
 
 # Change data types
 df$ARREST_DATE = as.Date(df$ARREST_DATE, format = '%m/%d/%Y')
 
-
 # Order df by ARREST_KEY descending
 df = df[rev( order(df$ARREST_KEY) ),]
-
-
-# Order df by ARREST_DATE descending
-df = df[rev( order(df$ARREST_DATE) ),]
-
 
 # Create new columns for Year, Month, Day
 df$ARREST_YEAR = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%Y")
 df$ARREST_MONTH = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%m")
 df$ARREST_DAY = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%d")
 
-
 # Change data types for Year, Month, Day
 df$ARREST_YEAR = as.integer(df$ARREST_YEAR)
 df$ARREST_MONTH = as.integer(df$ARREST_MONTH)
 df$ARREST_DAY = as.integer(df$ARREST_DAY)
-
-# Check if data type changed
-class(df$ARREST_YEAR)
-# "integer"
-
-
-# Grab a particular value df[r,c]
-df[1,1]
-
-
-# Count rows by creating groups
-# count() is a dplyr function
-count(df, ARREST_YEAR)
-
-
-# Count rows based on condition
-length( which(df$ARREST_YEAR == 2006) )
-
-
-# Filter using base R command to create a subset
-df_2006_base = df[df$ARREST_YEAR == 2006, ]
-
-
-# Using dplyr, we can simplify the syntax to create a subset
-df_2006_dplyr = filter(df, (ARREST_YEAR == 2006))
-
-
-# Filter all rows using multiple conditions using base
-df_2006_jan_base = df[df$ARREST_YEAR == 2006 & df$ARREST_MONTH == 1,]
-View(df_2006_jan_base)
-
-
-# Filter all rows using multiple conditions using dplyr
-df_2006_jan_dplyr = filter(df, (ARREST_YEAR == 2006 & ARREST_MONTH == 1))
-View(df_2006_jan_dplyr)
-
-
 # --------------------------------------------------
-
 # Reducing crime categories for simpler reporting
 
 # Count all OFNS_DESC
 length(unique(df$OFNS_DESC))
 # There are 85 different values for OFNS_DESC
 
-
 # Show call OFNS_DESC
 unique(df$OFNS_DESC)
-
 
 # THEFT_FRAUD
 THEFT = c("BURGLARY","PETIT LARCENY","OFFENSES INVOLVING FRAUD","THEFT OF SERVICES","POSSESSION OF STOLEN PROPERTY 5","THEFT-FRAUD",
@@ -188,18 +130,36 @@ df$CATEGORY[!df$OFNS_DESC %in% ALL_CAT] = "OTHER"
 unique(df$CATEGORY)
 # "OTHER" "ASSAULT" "THEFT & FRAUD" "TRAFFIC" "WEAPONS" "DRUGS" "SEXUAL ASSAULT" "MURDER" "CHILDREN"      
 
-
 # --------------------------------------------------
 # Drop unnecessary columns
 df = within(df, rm(PD_CD, KY_CD, LAW_CODE, JURISDICTION_CODE))
 
+# --------------------------------------------------
+# Fix age cohorts
+
+# Note the strange result by creating this dataframe
+df_arrests_age = df %>%
+  group_by(AGE_GROUP) %>%
+  summarize(total_arrests=n())
+df_arrests_age
+# This yields in a weird result because the age groups are incorrect
+
+# There are 91 distinct values in the AGE_GROUP column
+unique(df$AGE_GROUP)
+
+# Let's replace the values don't make sense with "UNKNOWN"
+
+good_ages = c('<18', '18-24', '25-44', '45-64', '65+')
+df$AGE_GROUP[!df$AGE_GROUP %in% good_ages] = 'UNKNOWN'
+
+# Now there are only 6 distinct values in AGE_GROUP
+unique(df$AGE_GROUP)
 
 # --------------------------------------------------
+# Data Analysis and Visualization
+# --------------------------------------------------
 
-# Plot total arrests by year using base R
-table(df$ARREST_YEAR) %>% plot(type='l')
-
-
+# Plot arrests by year
 # Let's build the plot syntax for the dplyr method in pieces
 # group_by() groups each record by year
 df %>%
@@ -519,23 +479,7 @@ cor(df_11_15_19[1],df_11_15_19[2])
 
 # Plot total arrests by age
 
-df_arrests_age = df %>%
-  group_by(AGE_GROUP) %>%
-  summarize(total_arrests=n())
 
-# This yields in a weird result because the age groups are incorrect
-df_arrests_age
-
-# There are 91 distinct values in the AGE_GROUP column
-unique(df$AGE_GROUP)
-
-# Let's replace the values don't make sense with "UNKNOWN"
-
-good_ages = c('<18', '18-24', '25-44', '45-64', '65+')
-df$AGE_GROUP[!df$AGE_GROUP %in% good_ages] = 'UNKNOWN'
-
-# Now there are only 6 distinct values in AGE_GROUP
-unique(df$AGE_GROUP)
 
 # We must filter only the results that make sense
 
