@@ -17,39 +17,38 @@ library(ggplot2)
 library(corrplot)
 library(scales)
 library(ggrepel)
-#library(tidyverse)
 library(usethis)
 library(RSocrata)
 library(mongolite)
 
-readRenviron()
 options(scipen=999)
 
-usethis::edit_r_environ()
-
-test_df = read.socrata(
-  'https://data.cityofnewyork.us/resource/8h9b-rp9u.json',
-  app_token=NYC_OpenData_AppToken,
-  email=NYC_OpenData_Email,
-  password=NYC_OpenData_Password
-)
-
-
+usethis::edit_r_environ("project")
+readRenviron(".Renviron")
 
 # --------------------------------------------------
 # Data Processing
 # --------------------------------------------------
 
 # Import CSV and create dataframe using readr
-df = read_csv("raw_data/NYPD_Arrests_Data__Historic_.csv")
+df2 = read_csv("raw_data/NYPD_Arrests_Data__Historic_.csv")
 
+# Make connection to mongoDB
+c=mongo(db='nyc_crime', collection='arrests')
+
+# Import data from mongoDB using 
+df = c$find('{}')
+
+View(df)
+
+df$arrest_date = substr(df$arrest_date, 1, 10)
 
 # View first few rows of df
 head(df)
 
 # View df in new window
 View(df)
-
+class(df$arrest_date)
 # Count all rows
 count(df)
 
@@ -60,15 +59,19 @@ summary(df)
 df = na.omit(df)
 
 # Change data types
-df$ARREST_DATE = as.Date(df$ARREST_DATE, format = '%m/%d/%Y')
+df$arrest_date = as.Date(df$arrest_date, format = '%Y-%m-%d')
 
 # Order df by ARREST_KEY descending
-df = df[rev( order(df$ARREST_KEY) ),]
+df = df[rev( order(df$arrest_key) ),]
 
 # Create new columns for Year, Month, Day
-df$ARREST_YEAR = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%Y")
-df$ARREST_MONTH = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%m")
-df$ARREST_DAY = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%d")
+#df$ARREST_YEAR = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%Y")
+#df$ARREST_MONTH = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%m")
+#df$ARREST_DAY = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%d")
+
+df$arrest_year = format(as.Date(df$arrest_date, format = "%Y-%m-%d"), "%Y")
+df$arrest_month = format(as.Date(df$arrest_date, format = "%Y-%m-%d"), "%m")
+df$arrest_day = format(as.Date(df$arrest_date, format = "%Y-%m-%d"), "%d")
 
 # Change data types for Year, Month, Day
 df$ARREST_YEAR = as.integer(df$ARREST_YEAR)
@@ -609,4 +612,17 @@ ggsave('arrests_sex_fel.png', device='png', path='img')
 # --------------------------------------------------
 # Data Persistence in NoSQL Database
 # --------------------------------------------------
+
+# Make connection to mongoDB
+c=mongo(db='nyc_crime', collection='arrests')
+
+# Insert all documents into arrests collection
+c$insert(df)
+
+# Count shows number of documents in mongoDB
+c$count()
+
+# We can also create a dataframe R by quering data from mongoDB
+
+#df_from_mongo = c$find('{}')
 
