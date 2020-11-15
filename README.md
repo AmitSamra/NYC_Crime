@@ -7,8 +7,8 @@
 # Table of Contents
 
 1. [Data Processing](https://github.com/AmitSamra/NYC_Crime#1-data-processing)
-2. [Data Analysis & Visualization](https://github.com/AmitSamra/NYC_Crime#2-data-analysis--visualization)
-3. [Data Persistence into NoSQL Database](https://github.com/AmitSamra/NYC_Crime#3-data-persistence-into-nosql-database)
+2. [Data Analysis](https://github.com/AmitSamra/NYC_Crime#2-data-analysis)
+3. [NoSQL](https://github.com/AmitSamra/NYC_Crime#3-nosql)
 
 # 1. Data Processing
 
@@ -34,7 +34,7 @@ Similarly, we see that there exist numerous age cohorts due to data being entere
 
 [Home](https://github.com/AmitSamra/NYC_Crime#)
 
-# 2. Data Analysis & Visualization
+# 2. Data Analysis
 
 We begin our analysis of viewing a simple line plot of arrests over time. We can see a sharp increase in arrests starting in 2007, which ultimately peak in 2010, followed by gradual decline until 2014. After 2014, we notice noticeable drop in arrests.
 
@@ -96,7 +96,7 @@ The same trend hold for felony arrests.
 
 ![arrests_sex_fel.png](img/arrests_sex_fel.png)
 
-# 3. Data Persistence into NoSQL Database
+# 3. NoSQL
 
 And finally, we can store the clean dataframe into a NoSQL Database. 
 
