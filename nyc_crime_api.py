@@ -77,7 +77,7 @@ longitude numeric(15,10)
 # Retrieve data from API, tranform and ingest into MySQL
 
 start_year=2006
-end_year=2006
+end_year=2019
 
 for i in range(start_year, end_year+1, 1):
     
@@ -89,6 +89,7 @@ for i in range(start_year, end_year+1, 1):
     results_df['arrest_key'] = results_df['arrest_key'].str.strip()
     results_df['arrest_key'] = results_df['arrest_key'].astype(int)
     
+    results_df['arrest_date'] = results_df['arrest_date'].str.strip()
     results_df['arrest_date'] = results_df['arrest_date'].astype(str)
     results_df['arrest_date'] = results_df['arrest_date'].str.slice(0,10)
     
@@ -116,17 +117,36 @@ for i in range(start_year, end_year+1, 1):
     results_df['law_code'] = results_df['law_code'].str.replace('NULL', 'UNKNOWN')
     results_df['law_code'] = results_df['law_code'].fillna('UNKNOWN')
     
+    results_df['law_cat_cd'] = results_df['law_cat_cd'].str.strip()
+    results_df['law_cat_cd'] = results_df['law_cat_cd'].str.replace('NULL', 'UNKNOWN')
+    results_df['law_cat_cd'] = results_df['law_cat_cd'].fillna('UNKNOWN')
+    
+    results_df['arrest_boro'] = results_df['arrest_boro'].str.strip()
+    results_df['arrest_precinct'] = results_df['arrest_precinct'].str.strip()
+    results_df['arrest_precinct'] = results_df['arrest_precinct'].astype(int)
+    
     results_df['jurisdiction_code'] = results_df['jurisdiction_code'].str.strip()
     results_df['jurisdiction_code'] = results_df['jurisdiction_code'].str.replace('NULL', '0')
     results_df['jurisdiction_code'] = results_df['jurisdiction_code'].fillna('0')
     results_df['jurisdiction_code'] = results_df['jurisdiction_code'].astype(float)
-    results_df['jurisdiction_code'] = results_df['jurisdiction_code'].astype(int) 
+    results_df['jurisdiction_code'] = results_df['jurisdiction_code'].astype(int)
     
-    results_df['arrest_precinct'] = results_df['arrest_precinct'].astype(int)
+    results_df['age_group'] = results_df['age_group'].str.strip()
+    results_df['perp_sex'] = results_df['perp_sex'].str.strip()
+    results_df['perp_race'] = results_df['perp_race'].str.strip()
+    
+    results_df['x_coord_cd'] = results_df['x_coord_cd'].str.strip()
     results_df['x_coord_cd'] = results_df['x_coord_cd'].astype(float)
+    
+    results_df['y_coord_cd'] = results_df['y_coord_cd'].str.strip()
     results_df['y_coord_cd'] = results_df['y_coord_cd'].astype(float)
+    
+    results_df['latitude'] = results_df['latitude'].str.strip()
     results_df['latitude'] = results_df['latitude'].astype(float)
+    
+    results_df['longitude'] = results_df['longitude'].str.strip()
     results_df['longitude'] = results_df['longitude'].astype(float)
-    results_df.to_sql('arrests', con=engine, index=False, if_exists='append')
+    
+    results_df.to_sql('arrests', con=engine, index=False, if_exists='replace')
     results_df.to_csv(f"./raw_data/{i}.csv", index=False)
 
