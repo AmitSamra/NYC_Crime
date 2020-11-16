@@ -81,7 +81,7 @@ end_year=2006
 
 for i in range(start_year, end_year+1, 1):
     
-    results = client.get("8h9b-rp9u", where="arrest_date between "+"'"+str(i)+"-01-01'"+" and "+"'"+str(i)+"-01-31'", limit=10000000)
+    results = client.get("8h9b-rp9u", where="arrest_date between "+"'"+str(i)+"-01-01'"+" and "+"'"+str(i)+"-04-30'", limit=10000000)
     results_df = pd.DataFrame.from_records(results)
     
     results_df = results_df.drop('lon_lat',1)
@@ -158,12 +158,21 @@ for i in range(start_year, end_year+1, 1):
     
     #results_df.to_sql('arrests', con=engine, index=False, if_exists='append', chunksize=10000)
     
-    num_rows = len(results_df)
-    for i in range(num_rows):
-        try:
-            results_df.iloc[i:i+1].to_sql('arrests', con=engine, index=False, if_exists='append', chunksize=10000)
-        except exc.IntegrityError:
-                pass
+    keys = engine.execute('SELECT DISTINCT(arrest_key) FROM arrests;')
     
-    results_df.to_csv(f"./raw_data/{i}.csv", index=False)
+    keys_list = []
+    for i in keys:
+        for j in i:
+            if j not in keys_list:
+                keys_list.append(j) 
+    
+    for k in results_df['arrest_key']:
+        if k not in keys_list:
+            results_df.iloc[results_df[results_df['arrest_key']==k].index].to_sql('arrests', con=engine, index=False, if_exists='append', chunksize=10000)
+    ''' df.iloc[ df[df['Category']==i].index  ]
+    num_rows = len(results_df)
+    for k in range(num_rows):
+        results_df.iloc[k:k+1].to_sql('arrests', con=engine, index=False, if_exists='append', chunksize=10000)
+    '''
+    #results_df.to_csv(f"./raw_data/{i}.csv", index=False)
 
