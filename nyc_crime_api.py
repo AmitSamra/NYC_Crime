@@ -132,20 +132,25 @@ for i in range(start_year, end_year+1, 1):
     results_df['jurisdiction_code'] = results_df['jurisdiction_code'].astype(int)
     
     results_df['age_group'] = results_df['age_group'].str.strip()
+    good_ages = ['<18', '18-24', '25-44', '45-64', '65+']
+    results_df[~results_df['age_group'].isin(good_ages)] = 'UNKNOWN'
+    
     results_df['perp_sex'] = results_df['perp_sex'].str.strip()
     results_df['perp_race'] = results_df['perp_race'].str.strip()
     
     results_df['x_coord_cd'] = results_df['x_coord_cd'].str.strip()
-    results_df['x_coord_cd'] = results_df['x_coord_cd'].astype(float)
+    #results_df['x_coord_cd'] = results_df['x_coord_cd'].str.replace('UNKNOWN', NaN)
+    #results_df['x_coord_cd'] = results_df['x_coord_cd'].astype(float)
     
     results_df['y_coord_cd'] = results_df['y_coord_cd'].str.strip()
-    results_df['y_coord_cd'] = results_df['y_coord_cd'].astype(float)
+    #results_df['y_coord_cd'] = results_df['y_coord_cd'].str.replace('UNKNOWN', NaN)
+    #results_df['y_coord_cd'] = results_df['y_coord_cd'].astype(float)
     
     results_df['latitude'] = results_df['latitude'].str.strip()
-    results_df['latitude'] = results_df['latitude'].astype(float)
+    #results_df['latitude'] = results_df['latitude'].astype(float)
     
     results_df['longitude'] = results_df['longitude'].str.strip()
-    results_df['longitude'] = results_df['longitude'].astype(float)
+    #results_df['longitude'] = results_df['longitude'].astype(float)
     
     results_df.to_sql('arrests', con=engine, index=False, if_exists='replace')
     results_df.to_csv(f"./raw_data/{i}.csv", index=False)
