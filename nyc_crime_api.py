@@ -55,13 +55,15 @@ for i in range(start_year, end_year+1, 1):
     results_df = results_df.drop('lon_lat',1)
     results_df['arrest_key'] = results_df['arrest_key'].str.strip()
     results_df['arrest_key'] = results_df['arrest_key'].astype(int)
-    results_df['arrest_date'] = pd.to_datetime(results_df['arrest_date'])
+    results_df['arrest_date'] = results_df['arrest_date'].astype(str)
+    results_df['arrest_date'] = results_df['arrest_date'].str.slice(0,10)
+    results_06_df['arrest_date'] = pd.to_datetime(results_06_df['arrest_date'])
     results_df['arrest_precinct'] = results_df['arrest_precinct'].astype(int)
     results_df['x_coord_cd'] = results_df['x_coord_cd'].astype(float)
     results_df['y_coord_cd'] = results_df['y_coord_cd'].astype(float)
     results_df['latitude'] = results_df['latitude'].astype(float)
     results_df['longitude'] = results_df['longitude'].astype(float)
-    results_df.to_sql('arrests', con=engine, index=False)
+    results_df.to_sql('arrests', con=engine, index=False, if_exists='replace')
     results_df.to_csv(f"./raw_data/{i}.csv", index=False)
 
     
