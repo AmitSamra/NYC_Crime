@@ -46,6 +46,36 @@ for i in range(start_year, end_year+1, 1):
 
 engine = create_engine('mysql+pymysql://' + os.environ.get("MYSQL_USER") + ":" + os.environ.get("MYSQL_PASSWORD") + '@localhost:3306/nyc_crime')
 
+# Create table arrests
+
+#engine.execute("DROP TABLE IF EXISTS arrests;")
+engine.execute(
+"""
+CREATE TABLE IF NOT EXISTS arrests (
+arrest_key int not null primary key,
+arrest_date date,
+pd_cd int,
+pd_desc varchar(50),
+ky_cd int,
+ofns_desc varchar(50),
+law_code varchar(50),
+law_cat_cd varchar(50),
+arrest_boro varchar(50),
+arrest_precinct int,
+jurisdiction_code int,
+age_group varchar(50),
+perp_sex varchar(50),
+perp_race varchar(50),
+x_coord_cd bigint(15),
+y_coord_cd bigint(15),
+latitude numeric(15,10),
+longitude numeric(15,10)
+);
+"""
+)
+
+# Retrieve data from API, tranform and ingest into MySQL
+
 start_year=2006
 end_year=2006
 
@@ -100,4 +130,3 @@ for i in range(start_year, end_year+1, 1):
     results_df.to_sql('arrests', con=engine, index=False, if_exists='append')
     results_df.to_csv(f"./raw_data/{i}.csv", index=False)
 
-    
