@@ -51,8 +51,8 @@ engine = create_engine('mysql+pymysql://' + os.environ.get("MYSQL_USER") + ":" +
 #engine.execute("DROP TABLE IF EXISTS arrests;")
 engine.execute(
 """
-CREATE TABLE IF NOT EXISTS arrests (
-arrest_key int not null primary key,
+CREATE TABLE arrests (
+arrest_key bigint not null primary key,
 arrest_date date,
 pd_cd int,
 pd_desc varchar(50),
@@ -66,8 +66,8 @@ jurisdiction_code int,
 age_group varchar(50),
 perp_sex varchar(50),
 perp_race varchar(50),
-x_coord_cd bigint(15),
-y_coord_cd bigint(15),
+x_coord_cd varchar(50),
+y_coord_cd varchar(50),
 latitude numeric(15,10),
 longitude numeric(15,10)
 );
@@ -77,7 +77,7 @@ longitude numeric(15,10)
 # Retrieve data from API, tranform and ingest into MySQL
 
 start_year=2006
-end_year=2019
+end_year=2006
 
 for i in range(start_year, end_year+1, 1):
     
@@ -85,8 +85,9 @@ for i in range(start_year, end_year+1, 1):
     results_df = pd.DataFrame.from_records(results)
     
     results_df = results_df.drop('lon_lat',1)
-    
+
     results_df['arrest_key'] = results_df['arrest_key'].str.strip()
+    results_df = results_df.drop(results_df[results_df['arrest_key'] == 'UNKNOWN'].index)
     results_df['arrest_key'] = results_df['arrest_key'].astype(int)
     
     results_df['arrest_date'] = results_df['arrest_date'].str.strip()
@@ -95,6 +96,7 @@ for i in range(start_year, end_year+1, 1):
     
     results_df['pd_cd'] = results_df['pd_cd'].str.strip()
     results_df['pd_cd'] = results_df['pd_cd'].str.replace('NULL', '0')
+    results_df['pd_cd'] = results_df['pd_cd'].str.replace('UNKNOWN', '0')
     results_df['pd_cd'] = results_df['pd_cd'].fillna('0')
     results_df['pd_cd'] = results_df['pd_cd'].astype(float)
     results_df['pd_cd'] = results_df['pd_cd'].astype(int)
@@ -122,7 +124,9 @@ for i in range(start_year, end_year+1, 1):
     results_df['law_cat_cd'] = results_df['law_cat_cd'].fillna('UNKNOWN')
     
     results_df['arrest_boro'] = results_df['arrest_boro'].str.strip()
+    
     results_df['arrest_precinct'] = results_df['arrest_precinct'].str.strip()
+    results_df['arrest_precinct'] = results_df['arrest_precinct'].astype(float)
     results_df['arrest_precinct'] = results_df['arrest_precinct'].astype(int)
     
     results_df['jurisdiction_code'] = results_df['jurisdiction_code'].str.strip()
@@ -133,25 +137,33 @@ for i in range(start_year, end_year+1, 1):
     
     results_df['age_group'] = results_df['age_group'].str.strip()
     good_ages = ['<18', '18-24', '25-44', '45-64', '65+']
-    results_df[~results_df['age_group'].isin(good_ages)] = 'UNKNOWN'
+    results_df.loc[~results_df.age_group.isin(good_ages), 'age_group'] = 'UNKNOWN'
     
     results_df['perp_sex'] = results_df['perp_sex'].str.strip()
     results_df['perp_race'] = results_df['perp_race'].str.strip()
     
     results_df['x_coord_cd'] = results_df['x_coord_cd'].str.strip()
-    #results_df['x_coord_cd'] = results_df['x_coord_cd'].str.replace('UNKNOWN', NaN)
     #results_df['x_coord_cd'] = results_df['x_coord_cd'].astype(float)
+    #results_df['x_coord_cd'] = results_df['x_coord_cd'].astype(int)
     
     results_df['y_coord_cd'] = results_df['y_coord_cd'].str.strip()
-    #results_df['y_coord_cd'] = results_df['y_coord_cd'].str.replace('UNKNOWN', NaN)
     #results_df['y_coord_cd'] = results_df['y_coord_cd'].astype(float)
+    #results_df['y_coord_cd'] = results_df['y_coord_cd'].astype(int)
     
     results_df['latitude'] = results_df['latitude'].str.strip()
-    #results_df['latitude'] = results_df['latitude'].astype(float)
+    results_df['latitude'] = results_df['latitude'].astype(float)
     
     results_df['longitude'] = results_df['longitude'].str.strip()
-    #results_df['longitude'] = results_df['longitude'].astype(float)
+    results_df['longitude'] = results_df['longitude'].astype(float)   
     
-    results_df.to_sql('arrests', con=engine, index=False, if_exists='replace')
+    #results_df.to_sql('arrests', con=engine, index=False, if_exists='append', chunksize=10000)
+    
+    num_rows = len(results_df)
+    for i in range(num_rows):
+        try:
+            results_df.iloc[i:i+1].to_sql('arrests', con=engine, index=False, if_exists='append', chunksize=10000)
+        except exc.IntegrityError:
+                pass
+    
     results_df.to_csv(f"./raw_data/{i}.csv", index=False)
 
