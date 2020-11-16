@@ -63,11 +63,19 @@ for i in range(start_year, end_year+1, 1):
     results_df['arrest_date'] = results_df['arrest_date'].str.slice(0,10)
     results_df['arrest_date'] = pd.to_datetime(results_df['arrest_date'])
     
-    results_df.loc[~results_df.pd_cd.dtype == int, 'pd_cd'] = 0
+    results_df['pd_cd'] = results_df['pd_cd'].str.strip()
+    results_df['pd_cd'] = results_df['pd_cd'].str.replace('NULL', '0')
+    results_df['pd_cd'] = results_df['pd_cd'].fillna('0')
     results_df['pd_cd'] = results_df['pd_cd'].astype(float)
     results_df['pd_cd'] = results_df['pd_cd'].astype(int)
     
     
+    
+    results_df['ky_cd'] = results_df['ky_cd'].str.strip()
+    results_df['ky_cd'] = results_df['ky_cd'].str.replace('NULL', '0')
+    results_df['ky_cd'] = results_df['ky_cd'].fillna('0')
+    results_df['ky_cd'] = results_df['ky_cd'].astype(float)
+    results_df['ky_cd'] = results_df['ky_cd'].astype(int)  
     
     results_df['arrest_precinct'] = results_df['arrest_precinct'].astype(int)
     results_df['x_coord_cd'] = results_df['x_coord_cd'].astype(float)
