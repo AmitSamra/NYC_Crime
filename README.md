@@ -4,7 +4,9 @@
 
 ![r_logo.png](img/r_logo.png)![ggplot2_logo.png](img/ggplot2_logo.png)![socrata_logo](img/socrata_logo.png)![python_logo](img/python_logo.png)![pandas_logo](img/pandas_logo.png)![mysql_logo](img/mysql_logo.png)![sqlalchemy_logo](img/sqlalchemy_logo.png)
 
-This repository includes a [Python script](https://github.com/AmitSamra/NYC_Crime/blob/master/nyc_crime_python.py) and accompanying [Jupyter Notebook](https://github.com/AmitSamra/NYC_Crime/blob/master/nyc_crime_python.ipynb), which contain ETL code to acquire data from Socrata's SODA API, clean data and persist data into a MySQL database. The [R script](https://github.com/AmitSamra/NYC_Crime/blob/master/nyc_crime_r.R) and accompanying [Jupter Notebook](https://github.com/AmitSamra/NYC_Crime/blob/master/nyc_crime_r.ipynb) contains code for performing data analysis and creating visualizations using ggplot2.
+This repository includes a [Python script](https://github.com/AmitSamra/NYC_Crime/blob/master/nyc_crime_python.py) and accompanying [Jupyter Notebook](https://github.com/AmitSamra/NYC_Crime/blob/master/nyc_crime_python.ipynb), which contain ETL code to acquire data from Socrata's SODA API, clean data and persist data into a MySQL database. The [R script](https://github.com/AmitSamra/NYC_Crime/blob/master/nyc_crime_r.R) and accompanying [Jupter Notebook](https://github.com/AmitSamra/NYC_Crime/blob/master/nyc_crime_r.ipynb) contains code for performing data analysis and creating visualizations using ggplot2. Lastly, a simple demonstration on connecting and persisting the R dataframe into MongoDB follows.
+
+![pipeline.png](img/pipeline.png)
 
 # Table of Contents
 
@@ -100,7 +102,7 @@ The same trend hold for felony arrests.
 
 # 3. NoSQL
 
-And finally, we can store the clean dataframe into a NoSQL Database. 
+Although I have already persisted the data into MySQL, for demonstration purposes, I show that NoSQL could have used as well. 
 
 ![nosql_data.png](img/nosql_data.png)
 

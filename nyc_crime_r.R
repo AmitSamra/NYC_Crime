@@ -8,7 +8,7 @@
 #install.packages("usethis")
 #install.packages("RSocrata")
 #install.packages("mongolite")
-install.packages("RMySQL")
+#install.packages("RMySQL")
 
 # Load packages
 library(readr)
@@ -84,9 +84,9 @@ df$arrest_date = as.Date(df$arrest_date, format = '%Y-%m-%d')
 df = df[rev( order(df$arrest_key) ),]
 
 # Create new columns for Year, Month, Day
-#df$arrest_year = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%Y")
-#df$arrest_month = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%m")
-#df$arrest_day = format(as.Date(df$ARREST_DATE, format = "%m/%d/%Y"), "%d")
+#df$arrest_year = format(as.Date(df$arrest_date, format = "%m/%d/%Y"), "%Y")
+#df$arrest_month = format(as.Date(df$arrest_date, format = "%m/%d/%Y"), "%m")
+#df$arrest_day = format(as.Date(df$arrest_date, format = "%m/%d/%Y"), "%d")
 
 df$arrest_year = format(as.Date(df$arrest_date, format = "%Y-%m-%d"), "%Y")
 df$arrest_month = format(as.Date(df$arrest_date, format = "%Y-%m-%d"), "%m")
@@ -403,6 +403,7 @@ ggsave('top_10_ofns.png', device='png', path='img')
 df_top_cat = df %>%
   group_by(category) %>%
   summarize(total_arrests = n())
+
 df_top_cat = top_n(df_top_cat,length(unique(df$category)),total_arrests) %>%
   arrange(desc(total_arrests))
 
@@ -503,16 +504,14 @@ cor(df_11_15_19[1],df_11_15_19[2])
 
 # Plot total arrests by age
 
-
-
 # We must filter only the results that make sense
 
 df_arrests_age = df %>%
-  group_by(AGE_GROUP) %>%
+  group_by(age_group) %>%
   summarize(total_arrests=n())
 
 df_arrests_age %>%
-  ggplot(aes(x=AGE_GROUP, y=total_arrests), label=total_arrets) +
+  ggplot(aes(x=age_group, y=total_arrests, label=total_arrests)) +
   geom_bar(stat='identity', fill='aquamarine4') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
@@ -528,12 +527,12 @@ ggsave('arrests_age.png', device='png', path='img')
 # Plot arrests by age for felonies
 
 df_arrests_age_fel = df %>%
-  filter(LAW_CAT_CD == 'F') %>%
-  group_by(AGE_GROUP) %>%
+  filter(law_cat_cd == 'F') %>%
+  group_by(age_group) %>%
   summarize(total_arrests=n())
 
 df_arrests_age_fel %>%
-  ggplot(aes(x=AGE_GROUP, y=total_arrests), label=total_arrets) +
+  ggplot(aes(x=age_group, y=total_arrests, label=total_arrests)) +
   geom_bar(stat='identity', fill='aquamarine3') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
@@ -552,7 +551,7 @@ df_arrests_age_comb = dplyr::bind_rows(df_arrests_age, df_arrests_age_fel, .id='
 df_arrests_age_comb
 
 df_arrests_age_comb %>%
-  ggplot(aes(x=AGE_GROUP, y=total_arrests, fill=id), label=total_arrets) +
+  ggplot(aes(x=age_group, y=total_arrests, fill=id, label=total_arrests)) +
   geom_bar(stat='identity') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
@@ -563,7 +562,7 @@ df_arrests_age_comb %>%
 # if the labels overlapping are troublesome, use ggrepel
 
 df_arrests_age_comb %>%
-  ggplot(aes(x=AGE_GROUP, y=total_arrests, fill=id, label=total_arrests)) +
+  ggplot(aes(x=age_group, y=total_arrests, fill=id, label=total_arrests)) +
   geom_bar(stat='identity') +
   scale_y_continuous(breaks=scales::breaks_extended(n=10), labels=comma) +
   #geom_text(hjust=.5, vjust=-1, size=3, aes(label=comma(total_arrests))) +
@@ -580,7 +579,7 @@ ggsave('arrests_age_all_fel.png', device='png', path='img')
 # Pie chart by sex
 
 df_sex = df %>%
-  group_by(PERP_SEX) %>%
+  group_by(perp_sex) %>%
   summarize(total_arrests = n()) %>%
   arrange(desc(total_arrests))
 
@@ -588,7 +587,7 @@ df_sex = df_sex %>%
   mutate(prop=total_arrests/sum(total_arrests), prop=scales::percent(prop,.10))
 
 df_sex %>%
-  ggplot(aes(x='', y=total_arrests, label=prop, fill=PERP_SEX)) +
+  ggplot(aes(x='', y=total_arrests, label=prop, fill=perp_sex)) +
   geom_bar(stat='identity') +
   coord_polar('y', start=1) +
   theme_void() +
@@ -604,8 +603,8 @@ ggsave('arrests_sex.png', device='png', path='img')
 # Doughnut chart for felony arrests by sex
 
 df_sex_fel = df %>%
-  filter(LAW_CAT_CD=='F') %>%
-  group_by(PERP_SEX) %>%
+  filter(law_cat_cd=='F') %>%
+  group_by(perp_sex) %>%
   summarize(total_arrests = n()) %>%
   arrange(desc(total_arrests))
 
@@ -613,20 +612,20 @@ df_sex_fel = df_sex_fel %>%
   mutate(prop=total_arrests/sum(total_arrests), prop=scales::percent(prop,.10))
 
 df_sex_fel %>%
-  ggplot(aes(x=2, y=total_arrests, label=prop, fill=PERP_SEX)) +
+  ggplot(aes(x=2, y=total_arrests, label=prop, fill=perp_sex)) +
   geom_bar(stat='identity') +
   coord_polar(theta='y', start=1) +
-  #theme_void() +
+  theme_void() +
   scale_fill_manual(labels=c('Female','Male'), values=c('lightpink2','steel blue')) +
   geom_text(hjust=0, vjust=0, size=3, aes(label=prop), color="black", position=position_stack(vjust=.5)) +
   labs(title='Felony Arrest Share by Sex', fill='Sex') +
-  xlim(0.5,2.5) +
-  theme(panel.background=element_blank(),
-        axis.line=element_blank(),
-        axis.text=element_blank(),
-        axis.ticks=element_blank(),
-        axis.title=element_blank(), 
-        plot.title=element_text(hjust=0.5, size=20))
+  xlim(0.5,2.5)
+  #theme(panel.background=element_blank(),
+   #     axis.line=element_blank(),
+    #    axis.text=element_blank(),
+     #   axis.ticks=element_blank(),
+      #  axis.title=element_blank(), 
+        #plot.title=element_text(hjust=0.5, size=20))
 
 ggsave('arrests_sex_fel.png', device='png', path='img')
 
@@ -635,15 +634,14 @@ ggsave('arrests_sex_fel.png', device='png', path='img')
 # --------------------------------------------------
 
 # Make connection to mongoDB
-c=mongo(db='nyc_crime', collection='arrests')
+#c=mongo(db='nyc_crime', collection='arrests')
 
 # Insert all documents into arrests collection
-c$insert(df)
+#c$insert(df)
 
 # Count shows number of documents in mongoDB
-c$count()
+#c$count()
 
 # We can also create a dataframe R by quering data from mongoDB
-
 #df_from_mongo = c$find('{}')
 
