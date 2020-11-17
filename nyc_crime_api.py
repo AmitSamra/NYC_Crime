@@ -79,9 +79,9 @@ longitude numeric(15,10)
 start_year=2006
 end_year=2006
 
-for i in range(start_year, end_year+1, 1):
+#for i in range(start_year, end_year+1, 1):
     
-    results = client.get("8h9b-rp9u", where="arrest_date between "+"'"+str(i)+"-01-01'"+" and "+"'"+str(i)+"-04-30'", limit=10000000)
+    results = client.get("8h9b-rp9u", where="arrest_date between "+"'"+str(i)+"-01-01'"+" and "+"'"+str(i)+"-01-30'", limit=10000000)
     results_df = pd.DataFrame.from_records(results)
     
     results_df = results_df.drop('lon_lat',1)
@@ -156,23 +156,26 @@ for i in range(start_year, end_year+1, 1):
     results_df['longitude'] = results_df['longitude'].str.strip()
     results_df['longitude'] = results_df['longitude'].astype(float)   
     
-    #results_df.to_sql('arrests', con=engine, index=False, if_exists='append', chunksize=10000)
+    results_df.to_sql('arrests_temp', con=engine, index=False, if_exists='replace', chunksize=10000)
     
-    keys = engine.execute('SELECT DISTINCT(arrest_key) FROM arrests;')
+    engine.execute("""
+    UPDATE arrests
+    SET arrests.value = arrests_temp.value
+    FROM arrests LEFT JOIN arrests_temp
+    ON arrests.arrest_key = arrests_temp.arrest_key
+    WHERE arrests.value != arrests_temp.value
+    """)
+    engine.execute("""
+    INSERT INTO arrests (arrest_key, arrest_date, pd_cd, pd_desc, ky_cd, ofns_desc, law_code,law_cat_cd,
+    arrest_boro, arrest_precinct, jurisdiction_code, age_group, perp_sex, perp_race, x_coord_cd,y_coord_cd,
+    latitude, longitude)
+    SELECT (arrest_key, arrest_date, pd_cd, pd_desc, ky_cd, ofns_desc, law_code,law_cat_cd,
+    arrest_boro, arrest_precinct, jurisdiction_code, age_group, perp_sex, perp_race, x_coord_cd,y_coord_cd,
+    latitude, longitude)
+    FROM arrests_temp
+    WHERE PK NOT IN (SELECT arrest_key FROM arrests)
+    """)
     
-    keys_list = []
-    for i in keys:
-        for j in i:
-            if j not in keys_list:
-                keys_list.append(j) 
     
-    for k in results_df['arrest_key']:
-        if k not in keys_list:
-            results_df.iloc[results_df[results_df['arrest_key']==k].index].to_sql('arrests', con=engine, index=False, if_exists='append', chunksize=10000)
-    ''' df.iloc[ df[df['Category']==i].index  ]
-    num_rows = len(results_df)
-    for k in range(num_rows):
-        results_df.iloc[k:k+1].to_sql('arrests', con=engine, index=False, if_exists='append', chunksize=10000)
-    '''
     #results_df.to_csv(f"./raw_data/{i}.csv", index=False)
 
