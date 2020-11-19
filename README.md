@@ -1,6 +1,6 @@
 ![crime_big.png](img/crime_big.png)
 
-[NYC OpenData](https://data.cityofnewyork.us/Public-Safety/NYPD-Arrests-Data-Historic-/8h9b-rp9u) offers data published by New York City agencies, including the New York City Police Department. This project performs exploratory analysis on NYPD historical valid arrests (those that were not voided due to lack of cause) spanning 2015 to 2019, inclusive. I use Python, Socrata, Pandas, R, ggplot2, SQLAlchemy and MySQL to clean, analyze and persist data.  
+[NYC OpenData](https://data.cityofnewyork.us/Public-Safety/NYPD-Arrests-Data-Historic-/8h9b-rp9u) offers data published by New York City agencies, including the New York City Police Department. This project performs exploratory analysis on NYPD historical valid arrests (those that were not voided due to lack of cause) spanning 2015 to 2019, inclusive. I use Python, Socrata, Pandas, R, ggplot2, SQLAlchemy, MySQL and mongoDB to clean, analyze and persist data.  
 
 ![r_logo.png](img/r_logo.png)![ggplot2_logo.png](img/ggplot2_logo.png)![socrata_logo](img/socrata_logo.png)![python_logo](img/python_logo.png)![pandas_logo](img/pandas_logo.png)![mysql_logo](img/mysql_logo.png)![sqlalchemy_logo](img/sqlalchemy_logo.png)![mongo_logo](img/mongo_logo.png)
 
