@@ -28,7 +28,7 @@ In R, viewing a subset of the dataframe shows us many columns like PD_CD, KY_CD,
 
 ![df_head](img/df_head.png)
 
-In fact, there are 85 distinct values for OFNS_DESC. We can create a new column called CATEGORY to hold much simpler values to identify a category of crime.
+Although the data has been cleaned, some transformation must still be made for better analysis. For example, there are 85 distinct values for OFNS_DESC. We can create a new column called CATEGORY to hold much simpler values to identify a category of crime.
 
 ![old_cat](img/old_cat.png)
 
