@@ -16,11 +16,15 @@ This repository includes a [Python script](https://github.com/AmitSamra/NYC_Crim
 
 # 1. Data Processing
 
-After loading the CSV into a dataframe, we can observe that most of the data types are correct, except for dates. The dates must be properly formated in R. 
+Data is acquired from the Socrata API using Python.
+
+![data_acq.png](img/data_acq.png)
+
+ Python is also used to clean data and ingest it into MySQL. 
 
 ![load_data.png](img/load_data.png)
 
-Viewing a subset of the dataframe shows us many columns like PD_CD, KY_CD, and OFNS_DESC provide no valuable information. 
+In R, viewing a subset of the dataframe shows us many columns like PD_CD, KY_CD, and OFNS_DESC provide no valuable information. 
 
 ![df_head](img/df_head.png)
 
