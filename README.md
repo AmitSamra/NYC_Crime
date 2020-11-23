@@ -13,6 +13,7 @@ This repository includes a [Python script](https://github.com/AmitSamra/NYC_Crim
 1. [Data Processing](https://github.com/AmitSamra/NYC_Crime#1-data-processing)
 2. [Data Analysis](https://github.com/AmitSamra/NYC_Crime#2-data-analysis)
 3. [NoSQL](https://github.com/AmitSamra/NYC_Crime#3-nosql)
+4. [Tableau](https://github.com/AmitSamra/NYC_Crime#4-tableau)
 
 # 1. Data Processing
 
@@ -110,6 +111,14 @@ Although I have already persisted the data into MySQL, for demonstration purpose
 
 ![nosql_data.png](img/nosql_data.png)
 
-This concludes my presentation. Thank you! 
+[Home](https://github.com/AmitSamra/NYC_Crime#)
+
+# 4. Tableau
+
+This following is a heatmap for arrests for dangerous crimes. 
+
+![tableau_heatmap.png](img/tableau_heatmap.png)
+
+This concludes my presentation. Thank you!
 
 [Home](https://github.com/AmitSamra/NYC_Crime#)
