@@ -115,7 +115,7 @@ Although I have already persisted the data into MySQL, for demonstration purpose
 
 # 4. Tableau
 
-Tableau gives us additional functionality with respect to visualization.
+Tableau gives us additional functionality with respect to visualizations.
 
 This following is a heatmap for arrests for dangerous crimes. The darker areas represent more activity or in simpler terms, the areas you want to avoid. 
 
@@ -123,7 +123,7 @@ This following is a heatmap for arrests for dangerous crimes. The darker areas r
 
 Tableau visualization allow us to view mutlidimensional data. The visualization below uses the size of the circles to convey the number of arrests. 
 
-![tableau_category.png](img/tableau_cateogry.png)
+![tableau_category.png](img/tableau_category.png)
 
 Tableau even allows us to perform quick calculations. The percentage of total calcuations were performed at the time of visualization without modification to the original dataset.
 
